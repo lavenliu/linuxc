@@ -24,7 +24,7 @@ main(int argc, char *argv[])
     struct passwd *pwd;
 
     while ((pwd = getpwent()) != NULL)
-        printf("%-8s %5ld\n", pwd->pw_name, (long) pwd->pw_uid);
+        printf("%-15s %-5ld %-15s\n", pwd->pw_name, (long) pwd->pw_uid, pwd->pw_shell);
     endpwent();
     exit(EXIT_SUCCESS);
 }
