@@ -3,6 +3,7 @@
 #endif
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/utsname.h>
 
 int main(int argc, char *argv[])
@@ -11,6 +12,7 @@ int main(int argc, char *argv[])
 
     if (uname(&uts) == -1) {
         perror("uname");
+        exit(1);
     }
 
     printf("Node name:   %s\n", uts.nodename);
