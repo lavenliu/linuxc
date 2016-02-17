@@ -71,12 +71,13 @@ one directory. This is particularly the case for each of the files in
 the 'lib' directory, most of which are also linked in the directory
 of the chapter relating to that file.
 
+`
 > Directory       Files for Chapter...
 >
 > lib             This contains library routines used by other 
 >                 programs. The tlpi_hdr.h and error_functions.* 
 >                 files are located here.
-                
+>                
 > progconc        3 (System Programming Concepts)
 >
 > fileio          4 and 5 (File I/O)
@@ -165,9 +166,12 @@ of the chapter relating to that file.
 > pty             64 (Pseudoterminals)
 > 
 > getopt          Appendix B: Parsing Command-Line Options
+`
 
 In addition, the following supplementary code is included (relating
 to topics NOT covered in TLPI):
 
+`
 > namespaces      Code examples for namespaces, mainly related to my LWN.net
 >                 article series starting at https://lwn.net/Articles/531114/
+`
