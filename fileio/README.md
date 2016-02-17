@@ -34,11 +34,11 @@ calls only indirectly, via I/O libraries):
   resources.
 
 `
-char buffer[MAX_READ+1];
-ssize_t numRead; 
-numRead = read(STDIN_FILENO, buffer, MAX_READ); 
-if (numRead == -1) 
-   errExit("read"); 
-buffer[numRead] = '\0'; 
+char buffer[MAX_READ+1];  
+ssize_t numRead;   
+numRead = read(STDIN_FILENO, buffer, MAX_READ);   
+if (numRead == -1)   
+   errExit("read");   
+buffer[numRead] = '\0';   
 printf("The input data was: %s\n", buffer);
 ` 
