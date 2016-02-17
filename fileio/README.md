@@ -33,6 +33,7 @@ calls only indirectly, via I/O libraries):
   order to release the file descriptor _fd_ and its associated kernel
   resources.
 
+	`
     char buffer[MAX_READ+1];
     ssize_t numRead;
 
@@ -41,3 +42,4 @@ calls only indirectly, via I/O libraries):
        errExit("read");
     buffer[numRead] = '\0';
     printf("The input data was: %s\n", buffer);
+	`
