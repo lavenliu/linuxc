@@ -33,6 +33,9 @@ calls only indirectly, via I/O libraries):
   order to release the file descriptor _fd_ and its associated kernel
   resources.
 
+Reading from a file read()
+--------------------------
+
 `
 char buffer[MAX_READ+1];  
 ssize_t numRead;   
@@ -42,3 +45,42 @@ if (numRead == -1)
 buffer[numRead] = '\0';   
 printf("The input data was: %s\n", buffer);
 ` 
+
+Writing to a file: write()
+--------------------------
+
+The _write()_ system call writes data to an open file.
+
+Closing a file: close()
+-----------------------
+
+When a process terminates, all of its open file descriptors are
+automatically closed.
+
+It is usually good practice to close unneeded file descriptors
+explicitly, since this makes our code more readable and reliable in
+the face of subsequent modifications.  Furthermore, file descriptors
+are a consumable resource, so failure to close a file descriptor could
+result in a process running out of descriptors. This is a particularly
+important issue when writing long-lived programs that deal with
+multiple files, such as shells or network servers.
+
+Changing the file offset: lseek()
+---------------------------------
+
+For each open file, the kernel records a file offset, sometimes also
+called the readwrite offset or pointer. This is the location in the
+file at which the next read() or write() will commence. The file
+offset is expressed as an ordinal byte position relative to the start
+of the file. The first byte of the file is at offset 0.
+
+The file offset is set to point to the start of the file when the file
+is opened and is automatically adjusted by each subsequent call to
+read() or write() so that it points to the next byte of the file after
+the byte(s) just read or written. Thus, successive read() and write()
+calls progress sequentially through a file.
+
+The lseek() system call adjusts the file offset of the open file
+referred to by the file descriptor fd, according to the values
+specified in offset and whence.
+
