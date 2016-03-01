@@ -1,0 +1,127 @@
+]0;root@python:~/unix/linux-programming-interface/pty[?1034h[root@python pty]# ./unbuffer 
+]0;root@python:~/unix/linux-programming-interface/pty[root@python pty]# ls
+Makefile    pty_master_open_bsd.c  [0m[01;32mscript[0m      [01;32munbuffer[0m
+pty_fork.c  pty_master_open.c      script.c    unbuffer.c
+pty_fork.h  pty_master_open.h      typescript
+[m]0;root@python:~/unix/linux-programming-interface/pty[root@python pty]# ps
+  PID TTY          TIME CMD
+ 8592 pts/2    00:00:00 bash
+ 8625 pts/2    00:00:00 ps
+]0;root@python:~/unix/linux-programming-interface/pty[root@python pty]# ls
+Makefile    pty_master_open_bsd.c  [0m[01;32mscript[0m      [01;32munbuffer[0m
+pty_fork.c  pty_master_open.c      script.c    unbuffer.c
+pty_fork.h  pty_master_open.h      typescript
+[m]0;root@python:~/unix/linux-programming-interface/pty[root@python pty]# ls
+Makefile    pty_master_open_bsd.c  [0m[01;32mscript[0m      [01;32munbuffer[0m
+pty_fork.c  pty_master_open.c      script.c    unbuffer.c
+pty_fork.h  pty_master_open.h      typescript
+[m]0;root@python:~/unix/linux-programming-interface/pty[root@python pty]# cd[K[Kvi script.c 
+[?1049h[?1h=[2;1H▽[6n[2;1H  [1;1H[1;11r[?12;25h[?12l[?25h[27m[m[H[2J[?25l[11;1H"script.c" 131L, 4388C[>c[27m[m[H[2J[1;1H[34m/*****************************************************************[2;1H*********\
+*                  Copyright (C) Michael Kerrisk, 2015.           [4;1H         *
+*                                                                 [6;1H         *
+* This program is free software. You may use, modify, and redistrr[8;1Hibute it *
+* under the terms of the GNU General Public License as published [m[9;1H[1m[34m@                                                                [m[10;1H[1m[7mscript.c  [unix/C] [ASCII=047/HEX=2F]           1,1            0%[m[11;1H"script.c" 131L, 4388C[1;1H[?12l[?25h[10;29H[1m[7m2/HEX=2A][11C2,[13C1%[3;1H[10;49H3,[13C2%[5;1H[10;49H4,[13C3%[7;1H[?25l[1;9r[m[1;1H[2M[1;11r[7;1H[34m* under the terms of the GNU General Public License as published  [8;1Hby the   *
+* Free Software Foundation, either version 3 or (at your option) [m[9;1H[1m[34m@                                                                [m[11;1H[K[10;49H[1m[7m5,[7;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[7;1H[34m* Free Software Foundation, either version 3 or (at your option)  [8;1Hany      *
+* later version. This program is distributed without any warranty[m[9;1H[1m[34m@                                                                [m[10;49H[1m[7m6,[13C4%[7;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[7;1H[34m* later version. This program is distributed without any warrantyy[8;1H.  See   *
+* the file COPYING.gpl-v3 for details.                           [m[9;1H[1m[34m@                                                                [m[10;49H[1m[7m7,[13C5%[7;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[7;1H[34m* the file COPYING.gpl-v3 for details.                            [8;1H         *
+\****************************************************************[m[9;1H[1m[34m@                                                                [m[10;49H[1m[7m8,[13C6%[7;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[7;1H[34m\*****************************************************************[8;1H*********/[m[10;28H[1m[7m92/HEX=5C][11C9,[7;1H[?12l[?25h[10;28H00/HEX=00][11C10,0-1[9C7%[9;1H[?25l[1;9r[m[1;1H[2M[1;11r[8;1H[34m/* Listing 64-3 */[m[10;28H[1m[7m47/HEX=2F][12C1,1   [8C8%[8;1H[?12l[?25h[10;28H00/HEX=00][12C2,0-1[9C9%[9;1H[?25l[1;9r[m[1;1H[2M[1;11r[8;1H[34m/* script.c[m[10;28H[1m[7m47/HEX=2F][12C3,1   [8;1H[?12l[?25h[10;28H00/HEX=00][10C14,0-1[9C10%[9;1H[?25l[1;9r[m[1;1H[2M[1;11r[8;1H[34m   A simple version of script(1).
+*/[m[10;28H[1m[7m32/HEX=20[12C5,1   [9C1%[8;1H[?12l[?25h[10;28H42/HEX=2A][11C6,[13C2%[9;1H[?25l[1;9r[m[1;1H[2M[1;11r[8;1H[35m#include [m[31m<sys/stat.h>[m
+[35m#include [m[31m<fcntl.h>[m[10;28H[1m[7m35/HEX=23][11C7,[8;1H[?12l[?25h[10;49H8,[13C3%[9;1H[?25l[1;9r[m[9;1H
+[1;11r[9;1H[35m#include [m[31m<libgen.h>[m[10;49H[1m[7m9,[13C4%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;1H[35m#include [m[31m<termios.h>[m[10;48H[1m[7m20,[13C5%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;1H[35m#if ! defined(__hpux)[m[10;49H[1m[7m1,[13C6%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;1H[34m/* HP-UX 11 doesn't have this header file */[m[10;28H[1m[7m47/HEX=2F][11C2,[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;1H[35m#include [m[31m<sys/select.h>[m[10;28H[1m[7m35/HEX=23][11C3,[13C7%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;1H[35m#endif[m[10;49H[1m[7m4,[13C8%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;1H[35m#include [m[31m"pty_fork.h"[m[11C[34m/* Declaration of ptyFork() */[m[10;49H[1m[7m5,[13C9%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;1H[35m#include [m[31m"tty_functions.h"[m      [34m/* Declaration of ttySetRaw() */[m[10;49H[1m[7m6,[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;1H[35m#include [m[31m"tlpi_hdr.h"[m[10;49H[1m[7m7,[12C20%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[10;28H[1m[7m00/HEX=00][11C8,0-1[10C1%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;1H[35m#define BUF_SIZE [m[31m256[m[10;28H[1m[7m35/HEX=23][11C9,1   [9C2%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;1H[35m#define MAX_SNAME [m[31m1000[m[10;48H[1m[7m30,[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[10;28H[1m[7m00/HEX=00][11C1,0-1[10C3%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;1H[32mstruct[m termios ttyOrig;[10;27H[1m[7m115/HEX=73][11C2,1   [9C4%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[10;27H[1m[7m000/HEX=00][11C3,0-1[10C5%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;1H[32mstatic[m [32mvoid[m[13C[34m/* Reset terminal mode on program exit */[m[10;27H[1m[7m115/HEX=73][11C4,1   [9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;1HttyReset([32mvoid[m)[10;29H[1m[7m6/HEX=74][11C5,[13C6%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;1H{[10;28H[1m[7m23/HEX=7B][11C6,[13C7%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;5H[33mif[m (tcsetattr(STDIN_FILENO, TCSANOW, &ttyOrig) == -[31m1[m)[10;27H[1m[7m032/HEX=20][11C7,[13C8%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;9HerrExit([31m"tcsetattr"[m);[10;49H[1m[7m8,[13C9%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[6;1H[46m{
+
+
+}[m[10;27H[1m[7m125/HEX=7D][11C9,[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[5;1H{
+
+
+}[10;27H[1m[7m000/HEX=00][10C40,0-1[9C30%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;1H[32mint[m[10;27H[1m[7m105/HEX=69][11C1,1   [9C1%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;1Hmain([32mint[m argc, [32mchar[m *argv[])[10;29H[1m[7m9/HEX=6D][11C2,[13C2%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;1H{[10;28H[1m[7m23/HEX=7B][11C3,[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;5H[32mchar[m slaveName[MAX_SNAME];[10;27H[1m[7m032/HEX=20][11C4,[13C3%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;5H[32mchar[m *shell;[10;49H[1m[7m5,[13C4%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;5H[32mint[m masterFd, scriptFd;[10;49H[1m[7m6,[13C5%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;5H[32mstruct[m winsize ws;[10;49H[1m[7m7,[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;5Hfd_set inFds;[10;49H[1m[7m8,[13C6%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;5H[32mchar[m buf[BUF_SIZE];[10;49H[1m[7m9,[13C7%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;5H[32mssize_t[m numRead;[10;48H[1m[7m50,[13C8%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;5Hpid_t childPid;[10;49H[1m[7m1,[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[10;28H[1m[7m00/HEX=00[12C2,0-1[10C9%[9;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[8;5H[34m/* Retrieve the attributes of terminal on which we are startee[9;1Hd */[m[10;28H[1m[7m32/HEX=20[12C3,1   [8C40%[8;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[10;28H[1m[7m00/HEX=00[12C4,0-1[10C1%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;5H[33mif[m (tcgetattr(STDIN_FILENO, &ttyOrig) == -[31m1[m)[10;28H[1m[7m32/HEX=20[12C5,1   [9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;9HerrExit([31m"tcgetattr"[m);[10;49H[1m[7m6,[13C2%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;5H[33mif[m (ioctl(STDIN_FILENO, TIOCGWINSZ, &ws) < [31m0[m)[10;49H[1m[7m7,[13C3%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;9HerrExit([31m"ioctl-TIOCGWINSZ"[m);[10;49H[1m[7m8,[13C4%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[10;28H[1m[7m00/HEX=00[12C9,0-1[10C5%[9;1H[?12l[?25h[?25l[1;9r[m[1;1H[3M[1;11r[7;5H[34m/* Create a child process, with parent and child connected vii[8;1Ha a
+       pty pair. The child is connected to the pty slave and its [m[9;1H[1m[34m@                                                                [m[10;28H[1m[7m32/HEX=20[11C60,1   [7;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[8;1H[34m       pty pair. The child is connected to the pty slave and its  [9;1Hterminal[m[10;49H[1m[7m1,[13C6%[8;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[8;1H[34m       attributes are set to be the same as those retrieved abovee[9;1H. */[m[10;49H[1m[7m2,[13C7%[8;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[10;28H[1m[7m00/HEX=00[12C3,0-1[10C8%[9;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[8;5HchildPid = ptyFork(&masterFd, slaveName, MAX_SNAME, &ttyOrig,,[9;1H &ws);[10;28H[1m[7m32/HEX=20[12C4,1   [8;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[8;5H[33mif[m (childPid == -[31m1[m)[9;9HerrExit([31m"ptyFork"[m);[10;49H[1m[7m5,[13C9%[8;1H[?12l[?25h[10;49H6,[12C50%[9;1H[?25l[1;9r[m[1;1H[2M[1;11r[9;5H[33mif[m (childPid == [31m0[m) {[8C[34m/* Child: execute a shell on pty [m[9;1H[1m[34m@                                                                [m[10;28H[1m[7m00/HEX=00[12C7,0-1[10C1%[8;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[7;1H    [33mif[m (childPid == [31m0[m) {        [34m/* Child: execute a shell on pty  [8;1Hslave */[m[10;28H[1m[7m32/HEX=20[12C8,1   [7;1H[?12l[?25h[10;28H00/HEX=00[12C9,0-1[10C2%[9;1H[?25l[1;9r[m[1;1H[3M[1;11r[7;9H[34m/* If the SHELL variable is set, use its value to determii[8;1Hne
+           the shell execed in child. Otherwise use /bin/sh. */[m[10;28H[1m[7m32/HEX=20[11C70,1   [9C3%[7;1H[?12l[?25h[10;49H1,[13C4%[9;1H[?25l[1;9r[m[9;1H
+[1;11r[10;28H[1m[7m00/HEX=00[12C2,0-1[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;9Hshell = getenv([31m"SHELL"[m);[10;28H[1m[7m32/HEX=20[12C3,1   [9C5%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;9H[33mif[m (shell == [31mNULL[m || *shell == [35m'\0'[m)[10;49H[1m[7m4,[13C6%[9;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[8;13Hshell = [31m"/bin/sh"[m;[10;49H[1m[7m5,[13C7%[8;1H[?12l[?25h[10;28H00/HEX=00[12C6,0-1[10C8%[9;1H[?25l[1;9r[m[9;1H
+[1;11r[9;9Hexeclp(shell, shell, ([32mchar[m *) [31mNULL[m);[10;28H[1m[7m32/HEX=20[12C7,1   [9;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[8;9HerrExit([31m"execlp"[m);      [34m/* If we get here, something wentt[9;1H wrong */[m[10;49H[1m[7m8,[13C9%[8;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;5H}[10;49H[1m[7m9,[12C60%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[10;28H[1m[7m00/HEX=00[11C80,0-1[10C1%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;5H[34m/* Parent: relay data between terminal and pty master */[m[10;28H[1m[7m32/HEX=20[12C1,1   [9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[10;28H[1m[7m00/HEX=00[12C2,0-1[10C2%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;5HscriptFd = open((argc > [31m1[m) ? argv[[31m1[m] : [31m"typescript"[m,[10;28H[1m[7m32/HEX=20[12C3,1   [9C3%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;25HO_WRONLY | O_CREAT | O_TRUNC,[10;49H[1m[7m4,[13C4%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;25HS_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP |[10;49H[1m[7m5,[9;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[8;33HS_IROTH | S_IWOTH);
+    [33mif[m (scriptFd == -[31m1[m)[10;49H[1m[7m6,[13C5%[8;1H[?12l[?25h[10;49H7,[13C6%[9;1H[?25l[1;9r[m[9;1H
+[1;11r[9;9HerrExit([31m"open typescript"[m);[10;49H[1m[7m8,[13C7%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[10;28H[1m[7m00/HEX=00[12C9,0-1[9;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[8;5H[34m/* Place terminal in raw mode so that we can pass all terminaa[9;1Hl[m[10;28H[1m[7m32/HEX=20[11C90,1   [9C8%[8;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;1H[34m     input to the pseudoterminal master untouched */[m[10;49H[1m[7m1,[13C9%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[10;28H[1m[7m00/HEX=00[12C2,0-1[9C70%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;5HttySetRaw(STDIN_FILENO, &ttyOrig);[10;28H[1m[7m32/HEX=20[12C3,1   [9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[10;28H[1m[7m00/HEX=00[12C4,0-1[10C1%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;5H[33mif[m (atexit(ttyReset) != [31m0[m)[10;28H[1m[7m32/HEX=20[12C5,1   [9C2%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;9HerrExit([31m"atexit"[m);[10;49H[1m[7m6,[13C3%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[10;28H[1m[7m00/HEX=00[12C7,0-1[10C4%[9;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[8;5H[34m/* Loop monitoring terminal and pty master for input. If the
+       terminal is ready for input, then read some bytes and writ[m[9;1H[1m[34m@                                                                [m[10;28H[1m[7m32/HEX=20[12C8,1   [8;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[8;1H[34m       terminal is ready for input, then read some bytes and writt[9;1He[m[10;49H[1m[7m9,[13C5%[8;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[8;1H[34m       them to the pty master. If the pty master is ready for inpp[9;1Hut,[m[10;48H[1m[7m100,1[11C6%[8;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;1H[34m       then read some bytes and write them to the terminal. */[m[10;50H[1m[7m1,[12C7%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[10;28H[1m[7m00/HEX=00[13C2,0-1[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;5H[33mfor[m (;;) {[10;28H[1m[7m32/HEX=20[13C3,1   [8C8%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;9HFD_ZERO(&inFds);[10;50H[1m[7m4,[12C9%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;9HFD_SET(STDIN_FILENO, &inFds);[10;50H[1m[7m5,[11C80%[9;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[8;9HFD_SET(masterFd, &inFds);[10;50H[1m[7m6,[8;1H[?12l[?25h[10;28H00/HEX=00[13C7,0-1[9C1%[9;1H[?25l[1;9r[m[1;1H[2M[1;11r[8;9H[33mif[m (select(masterFd + [31m1[m, &inFds, [31mNULL[m, [31mNULL[m, [31mNULL[m) == -[31m1[m)[9;13HerrExit([31m"select"[m);[10;28H[1m[7m32/HEX=20[13C8,1   [8C2%[8;1H[?12l[?25h[10;50H9,[12C3%[9;1H[?25l[1;9r[m[9;1H
+[1;11r[10;28H[1m[7m00/HEX=00[12C10,0-1[9;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[8;9H[33mif[m (FD_ISSET(STDIN_FILENO, &inFds)) {   [34m/* stdin --> pty  [9;1H*/[m[10;28H[1m[7m32/HEX=20[13C1,1   [8C4%[8;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;13HnumRead = read(STDIN_FILENO, buf, BUF_SIZE);[10;50H[1m[7m2,[12C5%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;13H[33mif[m (numRead <= [31m0[m)[10;50H[1m[7m3,[12C6%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;17Hexit([31mEXIT_SUCCESS[m);[10;50H[1m[7m4,[12C7%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[10;28H[1m[7m00/HEX=00[13C5,0-1[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;13H[33mif[m (write(masterFd, buf, numRead) != numRead)[10;28H[1m[7m32/HEX=20[13C6,1   [8C8%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;17Hfatal([31m"partial/failed write (masterFd)"[m);[10;50H[1m[7m7,[12C9%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;9H}[10;50H[1m[7m8,[11C90%[9;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[9;9H[33mif[m (FD_ISSET(masterFd, &inFds)) {      [34m/* pty --> stdout+[m[9;1H[1m[34m@                                                                [m[10;28H[1m[7m00/HEX=00[13C9,0-1[8;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[8;1H        [33mif[m (FD_ISSET(masterFd, &inFds)) {      [34m/* pty --> stdout++[9;1Hfile */[m[10;28H[1m[7m32/HEX=20[12C20,1   [8C1%[8;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;13HnumRead = read(masterFd, buf, BUF_SIZE);[10;50H[1m[7m1,[12C2%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;13H[33mif[m (numRead <= [31m0[m)[10;50H[1m[7m2,[12C3%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;17Hexit([31mEXIT_SUCCESS[m);[10;50H[1m[7m3,[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[10;28H[1m[7m00/HEX=00[13C4,0-1[9C4%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;13H[33mif[m (write(STDOUT_FILENO, buf, numRead) != numRead)[10;28H[1m[7m32/HEX=20[13C5,1   [8C5%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;17Hfatal([31m"partial/failed write (STDOUT_FILENO)"[m);[10;50H[1m[7m6,[12C6%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;13H[33mif[m (write(scriptFd, buf, numRead) != numRead)[10;50H[1m[7m7,[9;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[8;17Hfatal([31m"partial/failed write (scriptFd)"[m);[9;9H}[10;50H[1m[7m8,[12C7%[8;1H[?12l[?25h[10;50H9,[12C8%[9;1H[?25l[1;9r[m[9;1H
+[1;11r[9;5H}[10;49H[1m[7m30,[12C9%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
+[1;11r[9;1H}[10;27H[1m[7m125/HEX=7D][9C131,1  [8C100%[9;1H[?12l[?25h[?25l
+
+[m:[?12l[?25hq[?25l[?12l[?25h[?25l[11;1H[K[11;1H[?1l>[?12l[?25h[?1049l]0;root@python:~/unix/linux-programming-interface/pty[root@python pty]# [H[2J[root@python pty]# exit
