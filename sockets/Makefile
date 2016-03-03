@@ -6,11 +6,13 @@ GEN_EXE = i6d_ucase_sv i6d_ucase_cl \
 	is_seqnum_sv is_seqnum_cl is_seqnum_v2_sv is_seqnum_v2_cl \
 	socknames t_gethostbyname t_getservbyname \
 	ud_ucase_sv ud_ucase_cl \
-	us_xfr_cl us_xfr_sv us_xfr_v2_cl us_xfr_v2_sv
+	us_xfr_cl us_xfr_sv us_xfr_v2_cl us_xfr_v2_sv \
+	my_list_host_address
 
 LINUX_EXE = list_host_addresses \
 	scm_cred_recv scm_cred_send scm_rights_recv scm_rights_send \
-	us_abstract_bind
+	us_abstract_bind \
+	my_list_host_address
 
 EXE = ${GEN_EXE} ${LINUX_EXE}
 

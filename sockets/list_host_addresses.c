@@ -51,7 +51,6 @@ main(int argc, char *argv[])
             continue;
 
         /* Display interface name and address */
-
         s = getnameinfo(ifaddr->ifa_addr,
                     (family == AF_INET) ? sizeof(struct sockaddr_in) :
                                           sizeof(struct sockaddr_in6),
