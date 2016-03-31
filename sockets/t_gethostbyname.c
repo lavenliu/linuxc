@@ -1,13 +1,3 @@
-/*************************************************************************\
-*                  Copyright (C) Michael Kerrisk, 2015.                   *
-*                                                                         *
-* This program is free software. You may use, modify, and redistribute it *
-* under the terms of the GNU General Public License as published by the   *
-* Free Software Foundation, either version 3 or (at your option) any      *
-* later version. This program is distributed without any warranty.  See   *
-* the file COPYING.gpl-v3 for details.                                    *
-\*************************************************************************/
-
 /* Listing 59-10 */
 
 /* t_gethostbyname.c
@@ -29,8 +19,8 @@ int
 main(int argc, char *argv[])
 {
     struct hostent *h;
-    char **pp;
-    char str[INET6_ADDRSTRLEN];
+    char          **pp;
+    char            str[INET6_ADDRSTRLEN];
 
     for (argv++; *argv != NULL; argv++) {
         h = gethostbyname(*argv);

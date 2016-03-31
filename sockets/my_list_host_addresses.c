@@ -54,7 +54,7 @@ main(int argc, char *argv[])
             exit(EXIT_FAILURE);
         }
 
-        printf("%-16s %s\n", ifaddr->ifa_name, host);
+        printf("%s:%s\n", ifaddr->ifa_name, host);
     }
 
     exit(EXIT_SUCCESS);

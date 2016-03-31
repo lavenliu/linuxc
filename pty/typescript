@@ -1,127 +1,614 @@
-]0;root@python:~/unix/linux-programming-interface/pty[?1034h[root@python pty]# ./unbuffer 
-]0;root@python:~/unix/linux-programming-interface/pty[root@python pty]# ls
-Makefile    pty_master_open_bsd.c  [0m[01;32mscript[0m      [01;32munbuffer[0m
-pty_fork.c  pty_master_open.c      script.c    unbuffer.c
-pty_fork.h  pty_master_open.h      typescript
-[m]0;root@python:~/unix/linux-programming-interface/pty[root@python pty]# ps
-  PID TTY          TIME CMD
- 8592 pts/2    00:00:00 bash
- 8625 pts/2    00:00:00 ps
-]0;root@python:~/unix/linux-programming-interface/pty[root@python pty]# ls
-Makefile    pty_master_open_bsd.c  [0m[01;32mscript[0m      [01;32munbuffer[0m
-pty_fork.c  pty_master_open.c      script.c    unbuffer.c
-pty_fork.h  pty_master_open.h      typescript
-[m]0;root@python:~/unix/linux-programming-interface/pty[root@python pty]# ls
-Makefile    pty_master_open_bsd.c  [0m[01;32mscript[0m      [01;32munbuffer[0m
-pty_fork.c  pty_master_open.c      script.c    unbuffer.c
-pty_fork.h  pty_master_open.h      typescript
-[m]0;root@python:~/unix/linux-programming-interface/pty[root@python pty]# cd[K[Kvi script.c 
-[?1049h[?1h=[2;1Hâ–½[6n[2;1H  [1;1H[1;11r[?12;25h[?12l[?25h[27m[m[H[2J[?25l[11;1H"script.c" 131L, 4388C[>c[27m[m[H[2J[1;1H[34m/*****************************************************************[2;1H*********\
-*                  Copyright (C) Michael Kerrisk, 2015.           [4;1H         *
-*                                                                 [6;1H         *
-* This program is free software. You may use, modify, and redistrr[8;1Hibute it *
-* under the terms of the GNU General Public License as published [m[9;1H[1m[34m@                                                                [m[10;1H[1m[7mscript.c  [unix/C] [ASCII=047/HEX=2F]           1,1            0%[m[11;1H"script.c" 131L, 4388C[1;1H[?12l[?25h[10;29H[1m[7m2/HEX=2A][11C2,[13C1%[3;1H[10;49H3,[13C2%[5;1H[10;49H4,[13C3%[7;1H[?25l[1;9r[m[1;1H[2M[1;11r[7;1H[34m* under the terms of the GNU General Public License as published  [8;1Hby the   *
-* Free Software Foundation, either version 3 or (at your option) [m[9;1H[1m[34m@                                                                [m[11;1H[K[10;49H[1m[7m5,[7;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[7;1H[34m* Free Software Foundation, either version 3 or (at your option)  [8;1Hany      *
-* later version. This program is distributed without any warranty[m[9;1H[1m[34m@                                                                [m[10;49H[1m[7m6,[13C4%[7;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[7;1H[34m* later version. This program is distributed without any warrantyy[8;1H.  See   *
-* the file COPYING.gpl-v3 for details.                           [m[9;1H[1m[34m@                                                                [m[10;49H[1m[7m7,[13C5%[7;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[7;1H[34m* the file COPYING.gpl-v3 for details.                            [8;1H         *
-\****************************************************************[m[9;1H[1m[34m@                                                                [m[10;49H[1m[7m8,[13C6%[7;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[7;1H[34m\*****************************************************************[8;1H*********/[m[10;28H[1m[7m92/HEX=5C][11C9,[7;1H[?12l[?25h[10;28H00/HEX=00][11C10,0-1[9C7%[9;1H[?25l[1;9r[m[1;1H[2M[1;11r[8;1H[34m/* Listing 64-3 */[m[10;28H[1m[7m47/HEX=2F][12C1,1   [8C8%[8;1H[?12l[?25h[10;28H00/HEX=00][12C2,0-1[9C9%[9;1H[?25l[1;9r[m[1;1H[2M[1;11r[8;1H[34m/* script.c[m[10;28H[1m[7m47/HEX=2F][12C3,1   [8;1H[?12l[?25h[10;28H00/HEX=00][10C14,0-1[9C10%[9;1H[?25l[1;9r[m[1;1H[2M[1;11r[8;1H[34m   A simple version of script(1).
-*/[m[10;28H[1m[7m32/HEX=20[12C5,1   [9C1%[8;1H[?12l[?25h[10;28H42/HEX=2A][11C6,[13C2%[9;1H[?25l[1;9r[m[1;1H[2M[1;11r[8;1H[35m#include [m[31m<sys/stat.h>[m
-[35m#include [m[31m<fcntl.h>[m[10;28H[1m[7m35/HEX=23][11C7,[8;1H[?12l[?25h[10;49H8,[13C3%[9;1H[?25l[1;9r[m[9;1H
-[1;11r[9;1H[35m#include [m[31m<libgen.h>[m[10;49H[1m[7m9,[13C4%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;1H[35m#include [m[31m<termios.h>[m[10;48H[1m[7m20,[13C5%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;1H[35m#if ! defined(__hpux)[m[10;49H[1m[7m1,[13C6%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;1H[34m/* HP-UX 11 doesn't have this header file */[m[10;28H[1m[7m47/HEX=2F][11C2,[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;1H[35m#include [m[31m<sys/select.h>[m[10;28H[1m[7m35/HEX=23][11C3,[13C7%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;1H[35m#endif[m[10;49H[1m[7m4,[13C8%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;1H[35m#include [m[31m"pty_fork.h"[m[11C[34m/* Declaration of ptyFork() */[m[10;49H[1m[7m5,[13C9%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;1H[35m#include [m[31m"tty_functions.h"[m      [34m/* Declaration of ttySetRaw() */[m[10;49H[1m[7m6,[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;1H[35m#include [m[31m"tlpi_hdr.h"[m[10;49H[1m[7m7,[12C20%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[10;28H[1m[7m00/HEX=00][11C8,0-1[10C1%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;1H[35m#define BUF_SIZE [m[31m256[m[10;28H[1m[7m35/HEX=23][11C9,1   [9C2%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;1H[35m#define MAX_SNAME [m[31m1000[m[10;48H[1m[7m30,[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[10;28H[1m[7m00/HEX=00][11C1,0-1[10C3%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;1H[32mstruct[m termios ttyOrig;[10;27H[1m[7m115/HEX=73][11C2,1   [9C4%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[10;27H[1m[7m000/HEX=00][11C3,0-1[10C5%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;1H[32mstatic[m [32mvoid[m[13C[34m/* Reset terminal mode on program exit */[m[10;27H[1m[7m115/HEX=73][11C4,1   [9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;1HttyReset([32mvoid[m)[10;29H[1m[7m6/HEX=74][11C5,[13C6%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;1H{[10;28H[1m[7m23/HEX=7B][11C6,[13C7%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;5H[33mif[m (tcsetattr(STDIN_FILENO, TCSANOW, &ttyOrig) == -[31m1[m)[10;27H[1m[7m032/HEX=20][11C7,[13C8%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;9HerrExit([31m"tcsetattr"[m);[10;49H[1m[7m8,[13C9%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[6;1H[46m{
+]0;root@mydevops:~/unix/linux-programming-interface/pty[?1034h[root@mydevops pty]# ls
+Makefile    pty_fork.h             pty_master_open.c  [0m[01;32mscript[0m    typescript  unbuffer.c
+pty_fork.c  pty_master_open_bsd.c  pty_master_open.h  script.c  [01;32munbuffer[0m
+[m]0;root@mydevops:~/unix/linux-programming-interface/pty[root@mydevops pty]# vi py[Kty_fork.c 
+[?1049h[?1h=[2;1Hâ–½[6n[2;1H  [1;1H[1;26r[?12;25h[?12l[?25h[27m[m[H[2J[?25l[26;1H"pty_fork.c" 117L, 4387C[>c[27m[m[H[2J[1;1H[34m/*************************************************************************\
+*                  Copyright (C) Michael Kerrisk, 2015.                   *
+*                                                                         *
+* This program is free software. You may use, modify, and redistribute it *
+* under the terms of the GNU Lesser General Public License as published   *
+* by the Free Software Foundation, either version 3 or (at your option)   *
+* any later version. This program is distributed without any warranty.    *
+* See the files COPYING.lgpl-v3 and COPYING.gpl-v3 for details.           *
+\*************************************************************************/
 
+/* Listing 64-2 */
 
-}[m[10;27H[1m[7m125/HEX=7D][11C9,[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[5;1H{
+/* pty_fork.c
 
+   Implements ptyFork(), a function that creates a child process connected to
+   the parent (i.e., the calling process) via a pseudoterminal (pty). The child
+   is placed in a new session, with the pty slave as its controlling terminal,
+   and its standard input, output, and error connected to the pty slave.
 
-}[10;27H[1m[7m000/HEX=00][10C40,0-1[9C30%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;1H[32mint[m[10;27H[1m[7m105/HEX=69][11C1,1   [9C1%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;1Hmain([32mint[m argc, [32mchar[m *argv[])[10;29H[1m[7m9/HEX=6D][11C2,[13C2%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;1H{[10;28H[1m[7m23/HEX=7B][11C3,[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;5H[32mchar[m slaveName[MAX_SNAME];[10;27H[1m[7m032/HEX=20][11C4,[13C3%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;5H[32mchar[m *shell;[10;49H[1m[7m5,[13C4%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;5H[32mint[m masterFd, scriptFd;[10;49H[1m[7m6,[13C5%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;5H[32mstruct[m winsize ws;[10;49H[1m[7m7,[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;5Hfd_set inFds;[10;49H[1m[7m8,[13C6%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;5H[32mchar[m buf[BUF_SIZE];[10;49H[1m[7m9,[13C7%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;5H[32mssize_t[m numRead;[10;48H[1m[7m50,[13C8%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;5Hpid_t childPid;[10;49H[1m[7m1,[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[10;28H[1m[7m00/HEX=00[12C2,0-1[10C9%[9;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[8;5H[34m/* Retrieve the attributes of terminal on which we are startee[9;1Hd */[m[10;28H[1m[7m32/HEX=20[12C3,1   [8C40%[8;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[10;28H[1m[7m00/HEX=00[12C4,0-1[10C1%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;5H[33mif[m (tcgetattr(STDIN_FILENO, &ttyOrig) == -[31m1[m)[10;28H[1m[7m32/HEX=20[12C5,1   [9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;9HerrExit([31m"tcgetattr"[m);[10;49H[1m[7m6,[13C2%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;5H[33mif[m (ioctl(STDIN_FILENO, TIOCGWINSZ, &ws) < [31m0[m)[10;49H[1m[7m7,[13C3%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;9HerrExit([31m"ioctl-TIOCGWINSZ"[m);[10;49H[1m[7m8,[13C4%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[10;28H[1m[7m00/HEX=00[12C9,0-1[10C5%[9;1H[?12l[?25h[?25l[1;9r[m[1;1H[3M[1;11r[7;5H[34m/* Create a child process, with parent and child connected vii[8;1Ha a
-       pty pair. The child is connected to the pty slave and its [m[9;1H[1m[34m@                                                                [m[10;28H[1m[7m32/HEX=20[11C60,1   [7;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[8;1H[34m       pty pair. The child is connected to the pty slave and its  [9;1Hterminal[m[10;49H[1m[7m1,[13C6%[8;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[8;1H[34m       attributes are set to be the same as those retrieved abovee[9;1H. */[m[10;49H[1m[7m2,[13C7%[8;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[10;28H[1m[7m00/HEX=00[12C3,0-1[10C8%[9;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[8;5HchildPid = ptyFork(&masterFd, slaveName, MAX_SNAME, &ttyOrig,,[9;1H &ws);[10;28H[1m[7m32/HEX=20[12C4,1   [8;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[8;5H[33mif[m (childPid == -[31m1[m)[9;9HerrExit([31m"ptyFork"[m);[10;49H[1m[7m5,[13C9%[8;1H[?12l[?25h[10;49H6,[12C50%[9;1H[?25l[1;9r[m[1;1H[2M[1;11r[9;5H[33mif[m (childPid == [31m0[m) {[8C[34m/* Child: execute a shell on pty [m[9;1H[1m[34m@                                                                [m[10;28H[1m[7m00/HEX=00[12C7,0-1[10C1%[8;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[7;1H    [33mif[m (childPid == [31m0[m) {        [34m/* Child: execute a shell on pty  [8;1Hslave */[m[10;28H[1m[7m32/HEX=20[12C8,1   [7;1H[?12l[?25h[10;28H00/HEX=00[12C9,0-1[10C2%[9;1H[?25l[1;9r[m[1;1H[3M[1;11r[7;9H[34m/* If the SHELL variable is set, use its value to determii[8;1Hne
-           the shell execed in child. Otherwise use /bin/sh. */[m[10;28H[1m[7m32/HEX=20[11C70,1   [9C3%[7;1H[?12l[?25h[10;49H1,[13C4%[9;1H[?25l[1;9r[m[9;1H
-[1;11r[10;28H[1m[7m00/HEX=00[12C2,0-1[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;9Hshell = getenv([31m"SHELL"[m);[10;28H[1m[7m32/HEX=20[12C3,1   [9C5%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;9H[33mif[m (shell == [31mNULL[m || *shell == [35m'\0'[m)[10;49H[1m[7m4,[13C6%[9;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[8;13Hshell = [31m"/bin/sh"[m;[10;49H[1m[7m5,[13C7%[8;1H[?12l[?25h[10;28H00/HEX=00[12C6,0-1[10C8%[9;1H[?25l[1;9r[m[9;1H
-[1;11r[9;9Hexeclp(shell, shell, ([32mchar[m *) [31mNULL[m);[10;28H[1m[7m32/HEX=20[12C7,1   [9;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[8;9HerrExit([31m"execlp"[m);      [34m/* If we get here, something wentt[9;1H wrong */[m[10;49H[1m[7m8,[13C9%[8;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;5H}[10;49H[1m[7m9,[12C60%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[10;28H[1m[7m00/HEX=00[11C80,0-1[10C1%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;5H[34m/* Parent: relay data between terminal and pty master */[m[10;28H[1m[7m32/HEX=20[12C1,1   [9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[10;28H[1m[7m00/HEX=00[12C2,0-1[10C2%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;5HscriptFd = open((argc > [31m1[m) ? argv[[31m1[m] : [31m"typescript"[m,[10;28H[1m[7m32/HEX=20[12C3,1   [9C3%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;25HO_WRONLY | O_CREAT | O_TRUNC,[10;49H[1m[7m4,[13C4%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;25HS_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP |[10;49H[1m[7m5,[9;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[8;33HS_IROTH | S_IWOTH);
-    [33mif[m (scriptFd == -[31m1[m)[10;49H[1m[7m6,[13C5%[8;1H[?12l[?25h[10;49H7,[13C6%[9;1H[?25l[1;9r[m[9;1H
-[1;11r[9;9HerrExit([31m"open typescript"[m);[10;49H[1m[7m8,[13C7%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[10;28H[1m[7m00/HEX=00[12C9,0-1[9;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[8;5H[34m/* Place terminal in raw mode so that we can pass all terminaa[9;1Hl[m[10;28H[1m[7m32/HEX=20[11C90,1   [9C8%[8;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;1H[34m     input to the pseudoterminal master untouched */[m[10;49H[1m[7m1,[13C9%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[10;28H[1m[7m00/HEX=00[12C2,0-1[9C70%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;5HttySetRaw(STDIN_FILENO, &ttyOrig);[10;28H[1m[7m32/HEX=20[12C3,1   [9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[10;28H[1m[7m00/HEX=00[12C4,0-1[10C1%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;5H[33mif[m (atexit(ttyReset) != [31m0[m)[10;28H[1m[7m32/HEX=20[12C5,1   [9C2%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;9HerrExit([31m"atexit"[m);[10;49H[1m[7m6,[13C3%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[10;28H[1m[7m00/HEX=00[12C7,0-1[10C4%[9;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[8;5H[34m/* Loop monitoring terminal and pty master for input. If the
-       terminal is ready for input, then read some bytes and writ[m[9;1H[1m[34m@                                                                [m[10;28H[1m[7m32/HEX=20[12C8,1   [8;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[8;1H[34m       terminal is ready for input, then read some bytes and writt[9;1He[m[10;49H[1m[7m9,[13C5%[8;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[8;1H[34m       them to the pty master. If the pty master is ready for inpp[9;1Hut,[m[10;48H[1m[7m100,1[11C6%[8;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;1H[34m       then read some bytes and write them to the terminal. */[m[10;50H[1m[7m1,[12C7%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[10;28H[1m[7m00/HEX=00[13C2,0-1[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;5H[33mfor[m (;;) {[10;28H[1m[7m32/HEX=20[13C3,1   [8C8%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;9HFD_ZERO(&inFds);[10;50H[1m[7m4,[12C9%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;9HFD_SET(STDIN_FILENO, &inFds);[10;50H[1m[7m5,[11C80%[9;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[8;9HFD_SET(masterFd, &inFds);[10;50H[1m[7m6,[8;1H[?12l[?25h[10;28H00/HEX=00[13C7,0-1[9C1%[9;1H[?25l[1;9r[m[1;1H[2M[1;11r[8;9H[33mif[m (select(masterFd + [31m1[m, &inFds, [31mNULL[m, [31mNULL[m, [31mNULL[m) == -[31m1[m)[9;13HerrExit([31m"select"[m);[10;28H[1m[7m32/HEX=20[13C8,1   [8C2%[8;1H[?12l[?25h[10;50H9,[12C3%[9;1H[?25l[1;9r[m[9;1H
-[1;11r[10;28H[1m[7m00/HEX=00[12C10,0-1[9;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[8;9H[33mif[m (FD_ISSET(STDIN_FILENO, &inFds)) {   [34m/* stdin --> pty  [9;1H*/[m[10;28H[1m[7m32/HEX=20[13C1,1   [8C4%[8;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;13HnumRead = read(STDIN_FILENO, buf, BUF_SIZE);[10;50H[1m[7m2,[12C5%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;13H[33mif[m (numRead <= [31m0[m)[10;50H[1m[7m3,[12C6%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;17Hexit([31mEXIT_SUCCESS[m);[10;50H[1m[7m4,[12C7%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[10;28H[1m[7m00/HEX=00[13C5,0-1[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;13H[33mif[m (write(masterFd, buf, numRead) != numRead)[10;28H[1m[7m32/HEX=20[13C6,1   [8C8%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;17Hfatal([31m"partial/failed write (masterFd)"[m);[10;50H[1m[7m7,[12C9%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;9H}[10;50H[1m[7m8,[11C90%[9;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[9;9H[33mif[m (FD_ISSET(masterFd, &inFds)) {      [34m/* pty --> stdout+[m[9;1H[1m[34m@                                                                [m[10;28H[1m[7m00/HEX=00[13C9,0-1[8;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[8;1H        [33mif[m (FD_ISSET(masterFd, &inFds)) {      [34m/* pty --> stdout++[9;1Hfile */[m[10;28H[1m[7m32/HEX=20[12C20,1   [8C1%[8;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;13HnumRead = read(masterFd, buf, BUF_SIZE);[10;50H[1m[7m1,[12C2%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;13H[33mif[m (numRead <= [31m0[m)[10;50H[1m[7m2,[12C3%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;17Hexit([31mEXIT_SUCCESS[m);[10;50H[1m[7m3,[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[10;28H[1m[7m00/HEX=00[13C4,0-1[9C4%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;13H[33mif[m (write(STDOUT_FILENO, buf, numRead) != numRead)[10;28H[1m[7m32/HEX=20[13C5,1   [8C5%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;17Hfatal([31m"partial/failed write (STDOUT_FILENO)"[m);[10;50H[1m[7m6,[12C6%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;13H[33mif[m (write(scriptFd, buf, numRead) != numRead)[10;50H[1m[7m7,[9;1H[?12l[?25h[?25l[1;9r[m[1;1H[2M[1;11r[8;17Hfatal([31m"partial/failed write (scriptFd)"[m);[9;9H}[10;50H[1m[7m8,[12C7%[8;1H[?12l[?25h[10;50H9,[12C8%[9;1H[?25l[1;9r[m[9;1H
-[1;11r[9;5H}[10;49H[1m[7m30,[12C9%[9;1H[?12l[?25h[?25l[1;9r[m[9;1H
-[1;11r[9;1H}[10;27H[1m[7m125/HEX=7D][9C131,1  [8C100%[9;1H[?12l[?25h[?25l
+   In the parent, 'masterFd' is used to return the file descriptor for the
+   pty master.
 
-[m:[?12l[?25hq[?25l[?12l[?25h[?25l[11;1H[K[11;1H[?1l>[?12l[?25h[?1049l]0;root@python:~/unix/linux-programming-interface/pty[root@python pty]# [H[2J[root@python pty]# exit
+   If 'slaveName' is non-NULL, then it is used to return the name of the pty
+   slave. If 'slaveName' is not NULL,  then 'snLen' should be set to indicate[m
+[1m[7mpty_fork.c  [unix/C] [ASCII=047/HEX=2F]                                                                             1,1            0%[m[26;1H"pty_fork.c" 117L, 4387C[1;1H[?12l[?25h[25;31H[1m[7m2/HEX=2A][77C2,[13C1%[2;1H[25;117H3,[13C2%[3;1H[25;117H4,[13C3%[4;1H[25;117H5,[13C4%[5;1H[25;117H6,[13C5%[6;1H[25;117H7,[7;1H[25;117H8,[13C6%[8;1H[25;30H92/HEX=5C][77C9,[13C7%[9;1H[25;30H00/HEX=00][77C10,0-1[9C8%[10;1H[25;30H47/HEX=2F][78C1,1   [8C9%[11;1H[25;30H00/HEX=00][76C12,0-1[9C10%[12;1H[25;30H47/HEX=2F][77C3,1   [9C1%[13;1H[25;30H00/HEX=00][77C4,0-1[14;1H[25;30H32/HEX=20[78C5,1   [9C2%[15;1H[25;117H6,[13C3%[16;1H[25;117H7,[13C4%[17;1H[25;117H8,[13C5%[18;1H[25;30H00/HEX=00[78C9,0-1[10C6%[19;1H[25;30H32/HEX=20[77C20,1   [9C7%[20;1H[25;117H1,[21;1H[25;30H00/HEX=00[78C2,0-1[10C8%[22;1H[25;30H32/HEX=20[78C3,1   [9C9%[23;1H[25;117H4,[12C20%[24;1H[?25l[1;24r[m[24;1H
+[1;26r[24;1H[34m   the size of the buffer pointed to by 'slaveName'.[m[26;1H[K[25;117H[1m[7m5,[13C1%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[25;30H[1m[7m00/HEX=00[78C6,0-1[10C2%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;1H[34m   If 'slaveTermios' and 'slaveWS' are non-NULL, then they are used respectively[m[25;30H[1m[7m32/HEX=20[78C7,1   [9C3%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;1H[34m   to set the terminal attributes and window size of the pty slave.[m[25;117H[1m[7m8,[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[25;30H[1m[7m00/HEX=00[78C9,0-1[10C4%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;1H[34m   Returns:[m[25;30H[1m[7m32/HEX=20[77C30,1   [9C5%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;1H[34m        in child: 0[m[25;117H[1m[7m1,[13C6%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;1H[34m        in parent: PID of child or -1 on error[m[25;117H[1m[7m2,[13C7%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;1H[34m*/[m[25;30H[1m[7m42/HEX=2A][77C3,[13C8%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;1H[35m#include [m[31m<fcntl.h>[m[25;30H[1m[7m35/HEX=23][77C4,[13C9%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;1H[35m#include [m[31m<termios.h>[m[25;117H[1m[7m5,[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;1H[35m#include [m[31m<sys/ioctl.h>[m[25;117H[1m[7m6,[12C30%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;1H[35m#include [m[31m"pty_master_open.h"[m[25;117H[1m[7m7,[13C1%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;1H[35m#include [m[31m"pty_fork.h"[m[19C[34m/* Declares ptyFork() */[m[25;117H[1m[7m8,[13C2%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;1H[35m#include [m[31m"tlpi_hdr.h"[m[25;117H[1m[7m9,[13C3%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[25;30H[1m[7m00/HEX=00][76C40,0-1[10C4%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;1H[35m#define MAX_SNAME [m[31m1000[m[35m                  [m[34m/* Maximum size for pty slave name */[m[25;30H[1m[7m35/HEX=23][77C1,1   [9C5%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[25;30H[1m[7m00/HEX=00][77C2,0-1[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;1Hpid_t[25;29H[1m[7m112/HEX=70[78C3,1   [9C6%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;1HptyFork([32mint[m *masterFd, [32mchar[m *slaveName, [32msize_t[m snLen,[25;117H[1m[7m4,[13C7%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;9H[32mconst[m [32mstruct[m termios *slaveTermios, [32mconst[m [32mstruct[m winsize *slaveWS)[25;29H[1m[7m032/HEX=20[78C5,[13C8%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;1H{[25;29H[1m[7m123/HEX=7B][77C6,[13C9%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;5H[32mint[m mfd, slaveFd, savedErrno;[25;29H[1m[7m032/HEX=20][77C7,[12C40%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;5Hpid_t childPid;[25;117H[1m[7m8,[13C1%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;5H[32mchar[m slname[MAX_SNAME];[25;117H[1m[7m9,[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[25;30H[1m[7m00/HEX=00[77C50,0-1[10C2%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;5Hmfd = ptyMasterOpen(slname, MAX_SNAME);[25;30H[1m[7m32/HEX=20[78C1,1   [9C3%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;5H[33mif[m (mfd == -[31m1[m)[25;117H[1m[7m2,[13C4%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;9H[33mreturn[m -[31m1[m;[25;117H[1m[7m3,[13C5%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[25;30H[1m[7m00/HEX=00[78C4,0-1[10C6%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;5H[33mif[m (slaveName != [31mNULL[m) {[12C[34m/* Return slave name to caller */[m[25;30H[1m[7m32/HEX=20[78C5,1   [9C7%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;9H[33mif[m (strlen(slname) < snLen) {[25;117H[1m[7m6,[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;13Hstrncpy(slaveName, slname, snLen);[25;117H[1m[7m7,[13C8%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[25;30H[1m[7m00/HEX=00[78C8,0-1[10C9%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;9H} [33melse[m {[24C[34m/* 'slaveName' was too small */[m[25;30H[1m[7m32/HEX=20[78C9,1   [8C50%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;13Hclose(mfd);[25;116H[1m[7m60,[13C1%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;13Herrno = EOVERFLOW;[25;117H[1m[7m1,[13C2%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;13H[33mreturn[m -[31m1[m;[25;117H[1m[7m2,[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;9H}[25;117H[1m[7m3,[13C3%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;5H}[25;117H[1m[7m4,[13C4%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[25;30H[1m[7m00/HEX=00[78C5,0-1[10C5%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;5HchildPid = fork();[25;30H[1m[7m32/HEX=20[78C6,1   [9C6%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[25;30H[1m[7m00/HEX=00[78C7,0-1[10C7%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;5H[33mif[m (childPid == -[31m1[m) {[15C[34m/* fork() failed */[m[25;30H[1m[7m32/HEX=20[78C8,1   [9C8%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;9HsavedErrno = errno;[13C[34m/* close() might change 'errno' */[m[25;117H[1m[7m9,[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;9Hclose(mfd);[21C[34m/* Don't leak file descriptors */[m[25;116H[1m[7m70,[13C9%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;9Herrno = savedErrno;[25;117H[1m[7m1,[12C60%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;9H[33mreturn[m -[31m1[m;[25;117H[1m[7m2,[13C1%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;5H}[25;117H[1m[7m3,[13C2%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[25;30H[1m[7m00/HEX=00[78C4,0-1[10C3%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;5H[33mif[m (childPid != [31m0[m) {[16C[34m/* Parent */[m[25;30H[1m[7m32/HEX=20[78C5,1   [9C4%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;9H*masterFd = mfd;[16C[34m/* Only parent gets master fd */[m[25;117H[1m[7m6,[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;9H[33mreturn[m childPid;[16C[34m/* Like parent of fork() */[m[25;117H[1m[7m7,[13C5%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;5H}[25;117H[1m[7m8,[13C6%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[25;30H[1m[7m00/HEX=00[78C9,0-1[10C7%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;5H[34m/* Child falls through to here */[m[25;30H[1m[7m32/HEX=20[77C80,1   [9C8%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[25;30H[1m[7m00/HEX=00[78C1,0-1[10C9%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;5H[33mif[m (setsid() == -[31m1[m)[17C[34m/* Start a new session */[m[25;30H[1m[7m32/HEX=20[78C2,1   [8C70%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;9Herr_exit([31m"ptyFork:setsid"[m);[25;117H[1m[7m3,[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[25;30H[1m[7m00/HEX=00[78C4,0-1[10C1%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;5Hclose(mfd);[25C[34m/* Not needed in child */[m[25;30H[1m[7m32/HEX=20[78C5,1   [9C2%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[25;30H[1m[7m00/HEX=00[78C6,0-1[10C3%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;5HslaveFd = open(slname, O_RDWR);     [34m/* Becomes controlling tty */[m[25;30H[1m[7m32/HEX=20[78C7,1   [9C4%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;5H[33mif[m (slaveFd == -[31m1[m)[25;117H[1m[7m8,[13C5%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;9Herr_exit([31m"ptyFork:open-slave"[m);[25;117H[1m[7m9,[13C6%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[25;30H[1m[7m00/HEX=00[77C90,0-1[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;1H[35m#ifdef TIOCSCTTY                        [m[34m/* Acquire controlling tty on BSD */[m[25;30H[1m[7m35/HEX=23][77C1,1   [9C7%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;5H[33mif[m (ioctl(slaveFd, TIOCSCTTY, [31m0[m) == -[31m1[m)[25;31H[1m[7m2/HEX=20][77C2,[13C8%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;9Herr_exit([31m"ptyFork:ioctl-TIOCSCTTY"[m);[25;117H[1m[7m3,[13C9%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;1H[35m#endif[m[25;31H[1m[7m5/HEX=23][77C4,[12C80%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[25;30H[1m[7m00/HEX=00][77C5,0-1[10C1%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;5H[33mif[m (slaveTermios != [31mNULL[m)[11C[34m/* Set slave tty attributes */[m[25;30H[1m[7m32/HEX=20[78C6,1   [9C2%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;9H[33mif[m (tcsetattr(slaveFd, TCSANOW, slaveTermios) == -[31m1[m)[25;117H[1m[7m7,[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;13Herr_exit([31m"ptyFork:tcsetattr"[m);[25;117H[1m[7m8,[13C3%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[25;30H[1m[7m00/HEX=00[78C9,0-1[10C4%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;5H[33mif[m (slaveWS != [31mNULL[m)[16C[34m/* Set slave tty window size */[m[25;30H[1m[7m32/HEX=20[77C100,1  [9C5%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;9H[33mif[m (ioctl(slaveFd, TIOCSWINSZ, slaveWS) == -[31m1[m)[25;118H[1m[7m1,[12C6%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;13Herr_exit([31m"ptyFork:ioctl-TIOCSWINSZ"[m);[25;118H[1m[7m2,[12C7%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[25;30H[1m[7m00/HEX=00[79C3,0-1[9C8%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;5H[34m/* Duplicate pty slave to be child's stdin, stdout, and stderr */[m[25;30H[1m[7m32/HEX=20[79C4,1   [24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[25;30H[1m[7m00/HEX=00[79C5,0-1[9C9%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;5H[33mif[m (dup2(slaveFd, STDIN_FILENO) != STDIN_FILENO)[25;30H[1m[7m32/HEX=20[79C6,1   [7C90%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;9Herr_exit([31m"ptyFork:dup2-STDIN_FILENO"[m);[25;118H[1m[7m7,[12C1%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;5H[33mif[m (dup2(slaveFd, STDOUT_FILENO) != STDOUT_FILENO)[25;118H[1m[7m8,[12C2%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;9Herr_exit([31m"ptyFork:dup2-STDOUT_FILENO"[m);[25;118H[1m[7m9,[12C3%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;5H[33mif[m (dup2(slaveFd, STDERR_FILENO) != STDERR_FILENO)[25;117H[1m[7m10,[12C4%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;9Herr_exit([31m"ptyFork:dup2-STDERR_FILENO"[m);[25;118H[1m[7m1,[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[25;30H[1m[7m00/HEX=00[79C2,0-1[9C5%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;5H[33mif[m (slaveFd > STDERR_FILENO)[8C[34m/* Safety check */[m[25;30H[1m[7m32/HEX=20[79C3,1   [8C6%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;9Hclose(slaveFd);[17C[34m/* No longer need this fd */[m[25;118H[1m[7m4,[12C7%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[25;30H[1m[7m00/HEX=00[79C5,0-1[9C8%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;5H[33mreturn[m [31m0[m;[27C[34m/* Like child of fork() */[m[25;30H[1m[7m32/HEX=20[79C6,1   [8C9%[24;1H[?12l[?25h[?25l[1;24r[m[24;1H
+[1;26r[24;1H}[25;29H[1m[7m125/HEX=7D][75C117,1  [8C100%[24;1H[?12l[?25h[?25l
+
+[m:[?12l[?25hq[?25l[?12l[?25h[?25l[26;1H[K[26;1H[?1l>[?12l[?25h[?1049l]0;root@mydevops:~/unix/linux-programming-interface/pty[root@mydevops pty]# ls
+Makefile    pty_fork.h             pty_master_open.c  [0m[01;32mscript[0m    typescript  unbuffer.c
+pty_fork.c  pty_master_open_bsd.c  pty_master_open.h  script.c  [01;32munbuffer[0m
+[m]0;root@mydevops:~/unix/linux-programming-interface/pty[root@mydevops pty]# ls
+Makefile    pty_fork.h             pty_master_open.c  [0m[01;32mscript[0m    typescript  unbuffer.c
+pty_fork.c  pty_master_open_bsd.c  pty_master_open.h  script.c  [01;32munbuffer[0m
+[m]0;root@mydevops:~/unix/linux-programming-interface/pty[root@mydevops pty]# l
+bash: l: command not found
+]0;root@mydevops:~/unix/linux-programming-interface/pty[root@mydevops pty]# sls
+bash: sls: command not found
+]0;root@mydevops:~/unix/linux-programming-interface/pty[root@mydevops pty]# ls
+Makefile    pty_fork.h             pty_master_open.c  [0m[01;32mscript[0m    typescript  unbuffer.c
+pty_fork.c  pty_master_open_bsd.c  pty_master_open.h  script.c  [01;32munbuffer[0m
+[m]0;root@mydevops:~/unix/linux-programming-interface/pty[root@mydevops pty]# ls
+Makefile    pty_fork.h             pty_master_open.c  [0m[01;32mscript[0m    typescript  unbuffer.c
+pty_fork.c  pty_master_open_bsd.c  pty_master_open.h  script.c  [01;32munbuffer[0m
+[m]0;root@mydevops:~/unix/linux-programming-interface/pty[root@mydevops pty]# cd ..
+]0;root@mydevops:~/unix/linux-programming-interface[root@mydevops linux-programming-interface]# ls
+[0m[01;34macl[0m              COPYING.lgpl-v3  [01;34mfilesys[0m    Makefile.inc          [01;34mmmap[0m        [01;34mproc[0m      [01;34mpshm[0m       [01;34msockets[0m  [01;34mthreads[0m
+[01;34maltio[0m            [01;34mdaemons[0m          [01;34mgetopt[0m     Makefile.inc.FreeBSD  [01;34mmy[0m          [01;34mproccred[0m  [01;34mpty[0m        [01;34msvipc[0m    [01;34mtime[0m
+BUILDING         [01;34mdirs_links[0m       [01;34minotify[0m    Makefile.inc.HP-UX    [01;34mmyhack[0m      [01;34mprocexec[0m  README     [01;34msvmsg[0m    [01;34mtimers[0m
+[01;34mcap[0m              [01;34mfilebuff[0m         [01;34mlib[0m        Makefile.inc.MacOSX   [01;34mnamespaces[0m  [01;34mprocpri[0m   README.md  [01;34msvsem[0m    [01;34mtty[0m
+CHANGES          [01;34mfileio[0m           libtlpi.a  Makefile.inc.Solaris  [01;34mpgsjc[0m       [01;34mprocres[0m   [01;34mseccomp[0m    [01;34msvshm[0m    [01;34musers_groups[0m
+COPYING.agpl-v3  [01;34mfilelock[0m         [01;34mloginacct[0m  Makefile.inc.Tru64    [01;34mpipes[0m       [01;34mprogconc[0m  [01;34mshlibs[0m     [01;34msysinfo[0m  [01;34mvmem[0m
+COPYING.gpl-v3   [01;34mfiles[0m            Makefile   [01;34mmemalloc[0m              [01;34mpmsg[0m        [01;34mpsem[0m      [01;34msignals[0m    [01;34msyslim[0m   [01;34mxattr[0m
+[m]0;root@mydevops:~/unix/linux-programming-interface[root@mydevops linux-programming-interface]# cd[K[Kls
+[0m[01;34macl[0m              COPYING.lgpl-v3  [01;34mfilesys[0m    Makefile.inc          [01;34mmmap[0m        [01;34mproc[0m      [01;34mpshm[0m       [01;34msockets[0m  [01;34mthreads[0m
+[01;34maltio[0m            [01;34mdaemons[0m          [01;34mgetopt[0m     Makefile.inc.FreeBSD  [01;34mmy[0m          [01;34mproccred[0m  [01;34mpty[0m        [01;34msvipc[0m    [01;34mtime[0m
+BUILDING         [01;34mdirs_links[0m       [01;34minotify[0m    Makefile.inc.HP-UX    [01;34mmyhack[0m      [01;34mprocexec[0m  README     [01;34msvmsg[0m    [01;34mtimers[0m
+[01;34mcap[0m              [01;34mfilebuff[0m         [01;34mlib[0m        Makefile.inc.MacOSX   [01;34mnamespaces[0m  [01;34mprocpri[0m   README.md  [01;34msvsem[0m    [01;34mtty[0m
+CHANGES          [01;34mfileio[0m           libtlpi.a  Makefile.inc.Solaris  [01;34mpgsjc[0m       [01;34mprocres[0m   [01;34mseccomp[0m    [01;34msvshm[0m    [01;34musers_groups[0m
+COPYING.agpl-v3  [01;34mfilelock[0m         [01;34mloginacct[0m  Makefile.inc.Tru64    [01;34mpipes[0m       [01;34mprogconc[0m  [01;34mshlibs[0m     [01;34msysinfo[0m  [01;34mvmem[0m
+COPYING.gpl-v3   [01;34mfiles[0m            Makefile   [01;34mmemalloc[0m              [01;34mpmsg[0m        [01;34mpsem[0m      [01;34msignals[0m    [01;34msyslim[0m   [01;34mxattr[0m
+[m]0;root@mydevops:~/unix/linux-programming-interface[root@mydevops linux-programming-interface]# cd procexec/
+]0;root@mydevops:~/unix/linux-programming-interface/procexec[root@mydevops procexec]# ls
+[0m[01;32macct_on[0m         [01;32mdemo_clone[0m         fork_file_sharing.c           [01;32mmake_zombie[0m      [01;32morphan[0m               t_execl.c   t_system.c
+acct_on.c       demo_clone.c       [01;32mfork_sig_sync[0m                 make_zombie.c    orphan.c             [01;32mt_execle[0m    [01;32mt_vfork[0m
+[01;32macct_v3_view[0m    [01;32menvargs[0m            fork_sig_sync.c               [01;32mmulti_SIGCHLD[0m    print_wait_status.c  t_execle.c  t_vfork.c
+acct_v3_view.c  envargs.c          [01;32mfork_stdio_buf[0m                multi_SIGCHLD.c  print_wait_status.h  [01;32mt_execlp[0m    [01;32mvfork_fd_test[0m
+[01;32macct_view[0m       execlp.c           fork_stdio_buf.c              [01;32mmulti_wait[0m       README.md            t_execlp.c  vfork_fd_test.c
+acct_view.c     [01;32mexit_handlers[0m      [01;32mfork_whos_on_first[0m            multi_wait.c     simple_system.c      [01;32mt_execve[0m
+[01;32mchild_status[0m    exit_handlers.c    fork_whos_on_first.c          [01;32mmy_t_fork[0m        system.c             t_execve.c
+child_status.c  [01;32mfootprint[0m          [01;32mfork_whos_on_first.count.awk[0m  my_t_fork.c      [01;32mt_clone[0m              [01;32mt_fork[0m
+[01;32mcloseonexec[0m     footprint.c        [01;32mlongest_line.awk[0m              [01;32mnecho[0m            t_clone.c            t_fork.c
+closeonexec.c   [01;32mfork_file_sharing[0m  Makefile                      necho.c          [01;32mt_execl[0m              [01;32mt_system[0m
+[m]0;root@mydevops:~/unix/linux-programming-interface/procexec[root@mydevops procexec]# ls
+[0m[01;32macct_on[0m         [01;32mdemo_clone[0m         fork_file_sharing.c           [01;32mmake_zombie[0m      [01;32morphan[0m               t_execl.c   t_system.c
+acct_on.c       demo_clone.c       [01;32mfork_sig_sync[0m                 make_zombie.c    orphan.c             [01;32mt_execle[0m    [01;32mt_vfork[0m
+[01;32macct_v3_view[0m    [01;32menvargs[0m            fork_sig_sync.c               [01;32mmulti_SIGCHLD[0m    print_wait_status.c  t_execle.c  t_vfork.c
+acct_v3_view.c  envargs.c          [01;32mfork_stdio_buf[0m                multi_SIGCHLD.c  print_wait_status.h  [01;32mt_execlp[0m    [01;32mvfork_fd_test[0m
+[01;32macct_view[0m       execlp.c           fork_stdio_buf.c              [01;32mmulti_wait[0m       README.md            t_execlp.c  vfork_fd_test.c
+acct_view.c     [01;32mexit_handlers[0m      [01;32mfork_whos_on_first[0m            multi_wait.c     simple_system.c      [01;32mt_execve[0m
+[01;32mchild_status[0m    exit_handlers.c    fork_whos_on_first.c          [01;32mmy_t_fork[0m        system.c             t_execve.c
+child_status.c  [01;32mfootprint[0m          [01;32mfork_whos_on_first.count.awk[0m  my_t_fork.c      [01;32mt_clone[0m              [01;32mt_fork[0m
+[01;32mcloseonexec[0m     footprint.c        [01;32mlongest_line.awk[0m              [01;32mnecho[0m            t_clone.c            t_fork.c
+closeonexec.c   [01;32mfork_file_sharing[0m  Makefile                      necho.c          [01;32mt_execl[0m              [01;32mt_system[0m
+[m]0;root@mydevops:~/unix/linux-programming-interface/procexec[root@mydevops procexec]# ls
+[0m[01;32macct_on[0m         [01;32mdemo_clone[0m         fork_file_sharing.c           [01;32mmake_zombie[0m      [01;32morphan[0m               t_execl.c   t_system.c
+acct_on.c       demo_clone.c       [01;32mfork_sig_sync[0m                 make_zombie.c    orphan.c             [01;32mt_execle[0m    [01;32mt_vfork[0m
+[01;32macct_v3_view[0m    [01;32menvargs[0m            fork_sig_sync.c               [01;32mmulti_SIGCHLD[0m    print_wait_status.c  t_execle.c  t_vfork.c
+acct_v3_view.c  envargs.c          [01;32mfork_stdio_buf[0m                multi_SIGCHLD.c  print_wait_status.h  [01;32mt_execlp[0m    [01;32mvfork_fd_test[0m
+[01;32macct_view[0m       execlp.c           fork_stdio_buf.c              [01;32mmulti_wait[0m       README.md            t_execlp.c  vfork_fd_test.c
+acct_view.c     [01;32mexit_handlers[0m      [01;32mfork_whos_on_first[0m            multi_wait.c     simple_system.c      [01;32mt_execve[0m
+[01;32mchild_status[0m    exit_handlers.c    fork_whos_on_first.c          [01;32mmy_t_fork[0m        system.c             t_execve.c
+child_status.c  [01;32mfootprint[0m          [01;32mfork_whos_on_first.count.awk[0m  my_t_fork.c      [01;32mt_clone[0m              [01;32mt_fork[0m
+[01;32mcloseonexec[0m     footprint.c        [01;32mlongest_line.awk[0m              [01;32mnecho[0m            t_clone.c            t_fork.c
+closeonexec.c   [01;32mfork_file_sharing[0m  Makefile                      necho.c          [01;32mt_execl[0m              [01;32mt_system[0m
+[m]0;root@mydevops:~/unix/linux-programming-interface/procexec[root@mydevops procexec]# ls
+[0m[01;32macct_on[0m         [01;32mdemo_clone[0m         fork_file_sharing.c           [01;32mmake_zombie[0m      [01;32morphan[0m               t_execl.c   t_system.c
+acct_on.c       demo_clone.c       [01;32mfork_sig_sync[0m                 make_zombie.c    orphan.c             [01;32mt_execle[0m    [01;32mt_vfork[0m
+[01;32macct_v3_view[0m    [01;32menvargs[0m            fork_sig_sync.c               [01;32mmulti_SIGCHLD[0m    print_wait_status.c  t_execle.c  t_vfork.c
+acct_v3_view.c  envargs.c          [01;32mfork_stdio_buf[0m                multi_SIGCHLD.c  print_wait_status.h  [01;32mt_execlp[0m    [01;32mvfork_fd_test[0m
+[01;32macct_view[0m       execlp.c           fork_stdio_buf.c              [01;32mmulti_wait[0m       README.md            t_execlp.c  vfork_fd_test.c
+acct_view.c     [01;32mexit_handlers[0m      [01;32mfork_whos_on_first[0m            multi_wait.c     simple_system.c      [01;32mt_execve[0m
+[01;32mchild_status[0m    exit_handlers.c    fork_whos_on_first.c          [01;32mmy_t_fork[0m        system.c             t_execve.c
+child_status.c  [01;32mfootprint[0m          [01;32mfork_whos_on_first.count.awk[0m  my_t_fork.c      [01;32mt_clone[0m              [01;32mt_fork[0m
+[01;32mcloseonexec[0m     footprint.c        [01;32mlongest_line.awk[0m              [01;32mnecho[0m            t_clone.c            t_fork.c
+closeonexec.c   [01;32mfork_file_sharing[0m  Makefile                      necho.c          [01;32mt_execl[0m              [01;32mt_system[0m
+[m]0;root@mydevops:~/unix/linux-programming-interface/procexec[root@mydevops procexec]# cd
+]0;root@mydevops:~[root@mydevops ~]# cd myscript/
+]0;root@mydevops:~/myscript[root@mydevops myscript]# ls
+[0m[01;34mansible[0m  [01;34mbyteofpython[0m  [01;34memacs[0m  [01;34mfile[0m   [01;34miptables[0m  [01;34mmypython[0m  [01;34mperl[0m             [01;34mPython_Linux_Unix[0m  [01;34msalt[0m         [01;34mtraining[0m  userinfo  [01;34mweb[0m
+[01;34mbash[0m     [01;34mcore[0m          [01;34mfab[0m    [01;34mflask[0m  LICENSE   [01;34mmysql[0m     [01;34mpython_examples[0m  README.md          server.conf  [01;34murllib[0m    [01;34mutils[0m
+[m]0;root@mydevops:~/myscript[root@mydevops myscript]# cd [K[K[Kcd salt/
+]0;root@mydevops:~/myscript/salt[root@mydevops salt]# ls
+]0;root@mydevops:~/myscript/salt[root@mydevops salt]# ls
+]0;root@mydevops:~/myscript/salt[root@mydevops salt]# rz -E
+rz waiting to receive.**B0100000023be50Š**B0900000000a87cŠ**B0300400000f37fŠ**B0100000023be50Š**B0800000000022dŠ]0;root@mydevops:~/myscript/salt[root@mydevops salt]# ls
+[0m[01;31msalt-state.rar[0m
+[m]0;root@mydevops:~/myscript/salt[root@mydevops salt]# unz[Krar[K[K[K[K[Kyum install rarurarnrar
+Loaded plugins: auto-update-debuginfo, fastestmirror, refresh-packagekit
+Setting up Install Process
+Loading mirror speeds from cached hostfile
+epel/metalink                                                                                                 | 3.9 kB     00:00     
+epel-debuginfo/metalink                                                                                       | 4.0 kB     00:00     
+ * base: mirrors.aliyun.com
+ * epel: mirror.premi.st
+ * epel-debuginfo: mirror.premi.st
+ * extras: mirrors.aliyun.com
+ * updates: mirrors.aliyun.com
+MooseFS                                                                                                       |  951 B     00:00     
+base                                                                                                          | 3.7 kB     00:00     
+base-debuginfo                                                                                                | 2.5 kB     00:00     
+epel                                                                                                          | 4.3 kB     00:00     
+epel/primary_db                                      4% [=-                                        ]  0.0 B/s | 248 kB     --:-- ETA epel/primary_db                                     10% [====-                                     ] 588 kB/s | 655 kB     00:09 ETA epel/primary_db                                     15% [======                                    ] 605 kB/s | 917 kB     00:08 ETA epel/primary_db                                     20% [========                                  ] 620 kB/s | 1.2 MB     00:07 ETA epel/primary_db                                     25% [==========-                               ] 650 kB/s | 1.5 MB     00:06 ETA epel/primary_db                                     30% [============-                             ] 659 kB/s | 1.8 MB     00:06 ETA epel/primary_db                                     36% [===============                           ] 687 kB/s | 2.1 MB     00:05 ETA epel/primary_db                                     40% [=================                         ] 698 kB/s | 2.4 MB     00:05 ETA epel/primary_db                                     46% [===================                       ] 717 kB/s | 2.7 MB     00:04 ETA epel/primary_db                                     50% [=====================                     ] 731 kB/s | 3.0 MB     00:04 ETA epel/primary_db                                     55% [=======================                   ] 745 kB/s | 3.3 MB     00:03 ETA epel/primary_db                                     60% [=========================                 ] 750 kB/s | 3.5 MB     00:03 ETA epel/primary_db                                     63% [==========================-               ] 745 kB/s | 3.7 MB     00:02 ETA epel/primary_db                                     67% [============================              ] 746 kB/s | 3.9 MB     00:02 ETA epel/primary_db                                     69% [=============================             ] 726 kB/s | 4.1 MB     00:02 ETA epel/primary_db                                     71% [==============================            ] 705 kB/s | 4.2 MB     00:02 ETA epel/primary_db                                     74% [===============================           ] 691 kB/s | 4.4 MB     00:02 ETA epel/primary_db                                     77% [================================-         ] 680 kB/s | 4.5 MB     00:01 ETA epel/primary_db                                     80% [=================================-        ] 676 kB/s | 4.7 MB     00:01 ETA epel/primary_db                                     83% [===================================       ] 653 kB/s | 4.9 MB     00:01 ETA epel/primary_db                                     85% [===================================-      ] 637 kB/s | 5.0 MB     00:01 ETA epel/primary_db                                     87% [====================================-     ] 622 kB/s | 5.1 MB     00:01 ETA epel/primary_db                                     89% [=====================================-    ] 605 kB/s | 5.2 MB     00:01 ETA epel/primary_db                                     91% [======================================-   ] 598 kB/s | 5.4 MB     00:00 ETA epel/primary_db                                     94% [=======================================-  ] 588 kB/s | 5.5 MB     00:00 ETA epel/primary_db                                     97% [========================================- ] 588 kB/s | 5.7 MB     00:00 ETA epel/primary_db                                     99% [=========================================-] 575 kB/s | 5.8 MB     00:00 ETA epel/primary_db                                                                                               | 5.8 MB     00:08     
+epel-debuginfo                                                                                                | 3.0 kB     00:00     
+epel-debuginfo/primary_db                           19% [========                                  ]  0.0 B/s | 136 kB     --:-- ETA epel-debuginfo/primary_db                           46% [===================                       ] 262 kB/s | 315 kB     00:01 ETA epel-debuginfo/primary_db                           73% [==============================-           ] 282 kB/s | 498 kB     00:00 ETA epel-debuginfo/primary_db                                                                                     | 681 kB     00:01     
+extras                                                                                                        | 3.4 kB     00:00     
+updates                                                                                                       | 3.4 kB     00:00     
+No package [1munrar(B[m available.
+Error: Nothing to do
+]0;root@mydevops:~/myscript/salt[root@mydevops salt]# yum install unrar[1Prar[1Prar-raryrar rar
+Loaded plugins: auto-update-debuginfo, fastestmirror, refresh-packagekit
+Setting up Install Process
+Loading mirror speeds from cached hostfile
+ * base: mirrors.aliyun.com
+ * epel: mirror.premi.st
+ * epel-debuginfo: mirror.premi.st
+ * extras: mirrors.aliyun.com
+ * updates: mirrors.aliyun.com
+No package [1mrar(B[m available.
+Error: Nothing to do
+]0;root@mydevops:~/myscript/salt[root@mydevops salt]# ls
+[0m[01;31msalt-state.rar[0m
+[m]0;root@mydevops:~/myscript/salt[root@mydevops salt]# ls
+[0m[01;31msalt-state.rar[0m
+[m]0;root@mydevops:~/myscript/salt[root@mydevops salt]# ls
+[0m[01;31msalt-state.rar[0m
+[m]0;root@mydevops:~/myscript/salt[root@mydevops salt]# ls
+[0m[01;31msalt-state.rar[0m
+[m]0;root@mydevops:~/myscript/salt[root@mydevops salt]# ls
+[0m[01;31msalt-state.rar[0m
+[m]0;root@mydevops:~/myscript/salt[root@mydevops salt]# rz -E
+rz waiting to receive.**B0100000023be50Š**B0900000000a87cŠ**B0300400000f37fŠ**B0100000023be50Š**B0800000000022dŠ]0;root@mydevops:~/myscript/salt[root@mydevops salt]# ls
+[0m[01;31msalt-state.rar[0m  [01;31msalt-state.zip[0m
+[m]0;root@mydevops:~/myscript/salt[root@mydevops salt]# rm salt-state.rar 
+rm: remove regular file `salt-state.rar'? y
+]0;root@mydevops:~/myscript/salt[root@mydevops salt]# unzip salt-state.zip 
+Archive:  salt-state.zip
+   creating: salt-state/
+   creating: salt-state/haproxy/
+   creating: salt-state/haproxy/files/
+  inflating: salt-state/haproxy/files/haproxy.conf  
+  inflating: salt-state/haproxy/files/haproxy.init  
+  inflating: salt-state/haproxy/haproxy.sls  
+   creating: salt-state/init/
+   creating: salt-state/init/files/
+  inflating: salt-state/init/files/rsyslog.conf  
+  inflating: salt-state/init/files/syslog.conf  
+  inflating: salt-state/init/syslog.sls  
+  inflating: salt-state/init/tcpwrapper.sls  
+   creating: salt-state/keepalived/
+   creating: salt-state/keepalived/files/
+  inflating: salt-state/keepalived/files/keepalived.conf  
+  inflating: salt-state/keepalived/files/keepalived.init  
+  inflating: salt-state/keepalived/files/keepalived.sysconfig  
+  inflating: salt-state/keepalived/keepalived.sls  
+   creating: salt-state/logstash/
+  inflating: salt-state/logstash/elasticsearch.sls  
+   creating: salt-state/logstash/files/
+  inflating: salt-state/logstash/files/indexer.conf  
+  inflating: salt-state/logstash/files/logstash.sh  
+  inflating: salt-state/logstash/files/shipper.conf  
+  inflating: salt-state/logstash/indexer.sls  
+  inflating: salt-state/logstash/install.sls  
+  inflating: salt-state/logstash/shipper.sls  
+   creating: salt-state/nginx/
+   creating: salt-state/nginx/files/
+  inflating: salt-state/nginx/files/acl.conf  
+  inflating: salt-state/nginx/files/nginx-init  
+  inflating: salt-state/nginx/server.sls  
+   creating: salt-state/pillar/
+  inflating: salt-state/pillar/syslog.sls  
+ extracting: salt-state/pillar/top.sls  
+   creating: salt-state/pillar/zabbix/
+ extracting: salt-state/pillar/zabbix/agent.sls  
+   creating: salt-state/redis/
+   creating: salt-state/redis/files/
+  inflating: salt-state/redis/files/redis.conf  
+  inflating: salt-state/redis/server.sls  
+   creating: salt-state/zabbix/
+  inflating: salt-state/zabbix/agent.sls  
+   creating: salt-state/zabbix/files/
+  inflating: salt-state/zabbix/files/zabbix_agentd.conf  
+]0;root@mydevops:~/myscript/salt[root@mydevops salt]# ls
+[0m[01;34msalt-state[0m  [01;31msalt-state.zip[0m
+[m]0;root@mydevops:~/myscript/salt[root@mydevops salt]# cd sl[Kalt-state
+]0;root@mydevops:~/myscript/salt/salt-state[root@mydevops salt-state]# ls
+[0m[01;34mhaproxy[0m  [01;34minit[0m  [01;34mkeepalived[0m  [01;34mlogstash[0m  [01;34mnginx[0m  [01;34mpillar[0m  [01;34mredis[0m  [01;34mzabbix[0m
+[m]0;root@mydevops:~/myscript/salt/salt-state[root@mydevops salt-state]# cd keepalived/
+]0;root@mydevops:~/myscript/salt/salt-state/keepalived[root@mydevops keepalived]# ls
+[0m[01;34mfiles[0m  keepalived.sls
+[m]0;root@mydevops:~/myscript/salt/salt-state/keepalived[root@mydevops keepalived]# emacs keepalived.sls 
+[?1049h[?12;25h[?1h=[H[2J[26d[K[?1l>[?12l[?25h[?1049l[39;49m[?1049h[?12;25h[?1h=[H[2J[25d[?25l[7m-UUU:----F1  [0m[39;49m[27m[7m[1m*scratch*   [0m[39;49m[27m[7m   All L1     (Fundamental) --------------------------------------------------------------------------------[0m[39;49m[27m
+[A[2d[?12l[?25h[?12;25h[26d[?25l[yas] Prepared just-in-time loading for /root/.emacs.d/elpa/yasnippet-0.8.0/snippets[K[H
+[?12l[?25h[?12;25h[26;7H[?25lCheck your `yas-snippet-dirs': ~/.emacs.d/snippets is not a directory[K[H
+[?12l[?25h[?12;25h[26;7H[?25lReloaded everything (snippets will load just-in-time)... (some errors, check *Messages*).[H
+[?12l[?25h[?12;25h[26;7H[?25lPrepared just-in-time loading for /root/.emacs.d/elpa/elpy-1.11.0/snippets/[K[H
+[?12l[?25h[?12;25h[26;61H[?25lyasnippet-0.8.0/snippets[H
+[?12l[?25h[?12;25h[26;7H[?25lCheck your `yas-snippet-dirs': ~/.emacs.d/snippets is not a directory[K[H
+[?12l[?25h[?12;25h[26;7H[?25lReloaded everything (snippets will load just-in-time)... (some errors, check *Messages*).[H
+[?12l[?25h[?12;25h[26d[?25lde (quote emacs-lisp-mode) (quote (text-mode)))![K[H[7mFile Edit Options Buffers Tools Lisp-Interaction Virtual Envs YASnippet Development Help                                             [0m[39;49m[27m
+[A
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[7m-UUU:----F1  [0m[39;49m[27m[7m[1m*scratch*   [0m[39;49m[27m[7m   All L1     (Lisp Interaction) ---------------------------------------------------------------------------[0m[39;49m[27m
+[A
+[yas] Loading for `emacs-lisp-mode', just-in-time: (yas--load-directory-1 /root/.emacs.d/elpa/yasnippet-0.8.0/snippets/emacs-lisp-mo\
+[A[2d[?12l[?25h[?12;25h[26d[K[25;15H[?25lcompiled snippets from /root/.emacs.d/elpa/yasnippet-0.8.0/snippets/emacs-lisp-mode[K[H
+[?12l[?25h[?12;25h[26d[?25lxt-mode) (quote nil))![25;15Hfor `text-mode', just-in-time: (yas--load-directory-1 /root/.emacs.d/elpa/yasnippet-0.8.0/snippets/text-mode (quote te\
+[2d[?12l[?25h[?12;25h[26d[K[25;15H[?25lcompiled snippets from /root/.emacs.d/elpa/yasnippet-0.8.0/snippets/text-mode[K[H
+[?12l[?25h[?12;25h[>0c[26d[K[H[?25l[7mFile Edit Options Buffers Tools Lisp-Interaction Virtual Envs YASnippet Development Help                                             [0m[39;49m[27m
+[A
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[K
+[7m-UUU:----F1  [0m[39;49m[27m[7m[1m*scratch*   [0m[39;49m[27m[7m   All L1     (Lisp Interaction AC) ------------------------------------------------------------------------[0m[39;49m[27m
+[A
+[yas] Loading compiled snippets from /root/.emacs.d/elpa/yasnippet-0.8.0/snippets/text-mode[K[H
+[?12l[?25h[?12;25h[1;25r[24;1H[1L[1;26r[26;1H[?25lFor information about GNU Emacs and the GNU system, type <f1> C-a.[24;1H[K[2d[?12l[?25h[?12;25h[26d[?25lFor information about GNU Emacs and the GNU system, type <f1> C-a.[K[H[7mFile Edit Options Buffers Tools Virtual Envs YASnippet Development Help                                                              [0m[39;49m[27m
+[A
+keepalived-install:[K
+  file.managed:[K
+    - name: /usr/local/src/keepalived-1.2.8.tar.gz[K
+    - source: salt://keepalived/files/keepalived-1.2.8.tar.gz[K
+    - mode: 755[K
+    - user: root[K
+    - group: root[K
+  cmd.run:[K
+    - name: cd /usr/local/src && tar zxf keepalived-1.2.8.tar.gz && cd keepalived-1.2.8 && ./configure --prefix=/jboss/keepalived-1.\
+[A
+2.8 && make && make install[K
+    - unless: test -d /jboss/keepalived-1.2.8[K
+    - require:[K
+      - file: keepalived-install[K
+[K
+/etc/sysconfig/keepalived:[K
+  file.managed:[K
+    - source: salt://keepalived/files/keepalived.sysconfig[K
+    - mode: 644[K
+    - user: root[K
+    - group: root[K
+[K
+/etc/init.d/keepalived:[K
+  file.managed:[K
+[7m-UU-:----F1  [0m[39;49m[27m[7m[1mkeepalived.sls[0m[39;49m[27m[7m   Top L1     (Fundamental) ------------------------------------------------------------------------------[0m[39;49m[27m
+[A[2d[?12l[?25h[?12;25h[26d[K[25;36H[?25l[7m2[0m[39;49m[27m[H
+
+[?12l[?25h[?12;25h[25;36H[?25l[7m3[0m[39;49m[27m[4;1H[?12l[?25h[?12;25h[25;36H[?25l[7m4[0m[39;49m[27m[5;1H[?12l[?25h[?12;25h[25;36H[?25l[7m5[0m[39;49m[27m[6;1H[?12l[?25h[?12;25h[25;36H[?25l[7m6[0m[39;49m[27m[7;1H[?12l[?25h[?12;25h[25;36H[?25l[7m7[0m[39;49m[27m[8;1H[?12l[?25h[?12;25h[25;36H[?25l[7m8[0m[39;49m[27m[9;1H[?12l[?25h[?12;25h[25;36H[?25l[7m9[0m[39;49m[27m[10;1H[?12l[?25h[?12;25h
+[25;36H[?25l[7m10[0m[39;49m[27m[12;1H[?12l[?25h[?12;25h[25;37H[?25l[7m1[0m[39;49m[27m[13;1H[?12l[?25h[?12;25h[25;37H[?25l[7m2[0m[39;49m[27m[14;1H[?12l[?25h[?12;25h[25;37H[?25l[7m3[0m[39;49m[27m[15;1H[?12l[?25h[?12;25h[25;37H[?25l[7m4[0m[39;49m[27m[16;1H[?12l[?25h[?12;25h[25;37H[?25l[7m5[0m[39;49m[27m[17;1H[?12l[?25h[?12;25h[25;37H[?25l[7m6[0m[39;49m[27m[18;1H[?12l[?25h[?12;25h[25;37H[?25l[7m7[0m[39;49m[27m[19;1H[?12l[?25h[?12;25h[25;37H[?25l[7m8[0m[39;49m[27m[20;1H[?12l[?25h[?12;25h[25;37H[?25l[7m9[0m[39;49m[27m[21;1H[?12l[?25h[?12;25h[25;36H[?25l[7m20[0m[39;49m[27m[22;1H[?12l[?25h[?12;25h[25;37H[?25l[7m1[0m[39;49m[27m[23;1H[?12l[?25h[?12;25h[25;37H[?25l[7m2[0m[39;49m[27m[A[?12l[?25h[?12;25h[2d[?25l      - file: keepalived-install
+[K
+/etc/sysconfig/keepalived:[K[5;3Hfile.managed:[K[6;7Hsource: salt://keepalived/files/keepalived.sysconfig[7;7Hmode: 644[K[8;7Huser: root[K[9;3H  - group: root
+[K
+/etc/init.d/keepalived:[K[12;3Hfile.managed:[K[13;7Hsource: salt://keepalived/files/keepalived.init[14;5H- mode: 755[K[15;5H- user: root
+    - group: root[K
+[K
+keepalived-server:[K[19;3Hfile.managed:[20;7Hname: /etc/keepalived/keepalived.conf[21;7Hsource: salt://keepalived/files/keepalived.conf[22;5H- mode: 644
+    - user: root[K[24;3H  - group: root
+		[7m29% L23[0m[39;49m[27m[13;1H[?12l[?25h[?12;25h[25;37H[?25l[7m4[0m[39;49m[27m[14;1H[?12l[?25h[?12;25h[25;37H[?25l[7m5[0m[39;49m[27m[15;1H[?12l[?25h[?12;25h[25;37H[?25l[7m6[0m[39;49m[27m[16;1H[?12l[?25h[?12;25h[25;37H[?25l[7m7[0m[39;49m[27m[17;1H[?12l[?25h[?12;25h[25;37H[?25l[7m8[0m[39;49m[27m[18;1H[?12l[?25h[?12;25h[25;37H[?25l[7m9[0m[39;49m[27m[19;1H[?12l[?25h[?12;25h[25;36H[?25l[7m30[0m[39;49m[27m[20;1H[?12l[?25h[?12;25h[25;37H[?25l[7m1[0m[39;49m[27m[21;1H[?12l[?25h[?12;25h[25;37H[?25l[7m2[0m[39;49m[27m[22;1H[?12l[?25h[?12;25h[25;37H[?25l[7m3[0m[39;49m[27m[23;1H[?12l[?25h[?12;25h[25;37H[?25l[7m4[0m[39;49m[27m[A[?12l[?25h[?12;25h[2;5H[?25l- mode: 755[K[3;5H- user: root
+    - group: root[K
+[K
+keepalived-server:[K[7;3Hfile.managed:[8;7Hname: /etc/keepalived/keepalived.conf[9;7Hsource: salt://keepalived/files/keepalived.conf[10;5H- mode: 644
+    - user: root[K[12;3H  - group: root[13;7Htemplate: jinja[K[14;5H{% if grains['fqdn'] == 'file-node1.womai.com' %}[15;7HROUTEID: HAPROXY_MASTER[16;7HSTATEID: MASTER[17;5H- PRIORITYID: 101
+    {% elif grains['fqdn'] == 'file-node2.womai.com' %}[19;3H  - ROUTEID: HAPROXY_BACKUP[20;7HSTATEID: BACKUP[K[21;7HPRIORITYID: 100[K[22;5H{% endif %}[23;3Hcmd.run:[K
+name: chkconfig --add keepalived[25;31H[7m48% L35[0m[39;49m[27m[13;1H[?12l[?25h[?12;25h[25;37H[?25l[7m6[0m[39;49m[27m[14;1H[?12l[?25h[?12;25h[25;37H[?25l[7m7[0m[39;49m[27m[15;1H[?12l[?25h[?12;25h[25;37H[?25l[7m8[0m[39;49m[27m[16;1H[?12l[?25h[?12;25h[25;37H[?25l[7m9[0m[39;49m[27m[17;1H[?12l[?25h[?12;25h[25;36H[?25l[7m40[0m[39;49m[27m[18;1H[?12l[?25h[?12;25h[25;37H[?25l[7m1[0m[39;49m[27m[19;1H[?12l[?25h[?12;25h[25;37H[?25l[7m2[0m[39;49m[27m[20;1H[?12l[?25h[?12;25h[25;37H[?25l[7m3[0m[39;49m[27m[21;1H[?12l[?25h[?12;25h[25;37H[?25l[7m4[0m[39;49m[27m[22;1H[?12l[?25h[?12;25h[25;37H[?25l[7m5[0m[39;49m[27m[23;1H[?12l[?25h[?12;25h[25;37H[?25l[7m6[0m[39;49m[27m[A[?12l[?25h[?12;25h[2;5H[?25l{% if grains['fqdn'] == 'file-node1.womai.com' %}[3;7HROUTEID: HAPROXY_MASTER[4;7HSTATEID: MASTER[5;5H- PRIORITYID: 101
+    {% elif grains['fqdn'] == 'file-node2.womai.com' %}[7;3H  - ROUTEID: HAPROXY_BACKUP[8;7HSTATEID: BACKUP[K[9;7HPRIORITYID: 100[K[10;5H{% endif %}[11;3Hcmd.run:[K
+name: chkconfig --add keepalived[13;7Hunless: chkconfig --list | grep keepalived[14;5H- require:[K[15;5H  - file: /etc/init.d/keepalived[16;3Hservice.running:[K[17;7Hname: keepalived[18;5H- enable: True[K[19;7Hwatch:[K[20;5H  - file: keepalived-server
+[K
+[K
+[K
+[K[25;31H[7mBot L47[0m[39;49m[27m[13;1H[?12l[?25h[?12;25h[25;37H[?25l[7m8[0m[39;49m[27m[14;1H[?12l[?25h[?12;25h[25;37H[?25l[7m9[0m[39;49m[27m[15;1H[?12l[?25h[?12;25h[25;36H[?25l[7m50[0m[39;49m[27m[16;1H[?12l[?25h[?12;25h[25;37H[?25l[7m1[0m[39;49m[27m[17;1H[?12l[?25h[?12;25h[25;37H[?25l[7m2[0m[39;49m[27m[18;1H[?12l[?25h[?12;25h[25;37H[?25l[7m3[0m[39;49m[27m[19;1H[?12l[?25h[?12;25h[25;37H[?25l[7m4[0m[39;49m[27m[20;1H[?12l[?25h[?12;25h[25;37H[?25l[7m5[0m[39;49m[27m[21;1H[?12l[?25h[?12;25h[26d[?25lEnd of buffer[21;1H[?12l[?25h[?12;25h[26d[K[25;37H[?25l[7m4[0m[39;49m[27m[20;1H[?12l[?25h[?12;25h[25;37H[?25l[7m3[0m[39;49m[27m[19;1H[?12l[?25h[?12;25h[25;37H[?25l[7m2[0m[39;49m[27m[18;1H[?12l[?25h[?12;25h[25;37H[?25l[7m1[0m[39;49m[27m[17;1H[?12l[?25h[?12;25h[25;37H[?25l[7m0[0m[39;49m[27m[16;1H[?12l[?25h[?12;25h[25;36H[?25l[7m49[0m[39;49m[27m[15;1H[?12l[?25h[?12;25h[25;37H[?25l[7m8[0m[39;49m[27m[14;1H[?12l[?25h[?12;25h[25;37H[?25l[7m7[0m[39;49m[27m[13;1H[?12l[?25h[?12;25h[25;37H[?25l[7m6[0m[39;49m[27m[12;1H[?12l[?25h[?12;25h[25;37H[?25l[7m5[0m[39;49m[27m[11;1H[?12l[?25h[?12;25h[25;37H[?25l[7m4[0m[39;49m[27m[10;1H[?12l[?25h[?12;25h[25;37H[?25l[7m3[0m[39;49m[27m[9;1H[?12l[?25h[?12;25h[25;37H[?25l[7m2[0m[39;49m[27m[8;1H[?12l[?25h[?12;25h[25;37H[?25l[7m1[0m[39;49m[27m[7;1H[?12l[?25h[?12;25h[25;37H[?25l[7m0[0m[39;49m[27m[6;1H[?12l[?25h[?12;25h[25;36H[?25l[7m39[0m[39;49m[27m[5;1H[?12l[?25h[?12;25h[25;37H[?25l[7m8[0m[39;49m[27m[4;1H[?12l[?25h[?12;25h[25;37H[?25l[7m7[0m[39;49m[27m[H
+
+[?12l[?25h[?12;25h[25;37H[?25l[7m6[0m[39;49m[27m[H
+[?12l[?25h[?12;25h[2;5H[?25l- mode: 755[K[3;7Huser: root[K[4;7Hgroup: root[K
+[K
+keepalived-server:[K[7;3Hfile.managed:[K[8;7Hname: /etc/keepalived/keepalived.conf[9;7Hsource: salt://keepalived/files/keepalived.conf[10;5H- mode: 644[11;3H  - user: root[12;7Hgroup: root[K[13;7Htemplate: jinja[K[14;5H{% if grains['fqdn'] == 'file-node1.womai.com' %}[15;5H- ROUTEID: HAPROXY_MASTER[K[16;3H  - STATEID: MASTER[17;7HPRIORITYID: 101[K[18;5H{% elif grains['fqdn'] == 'file-node2.womai.com' %}[19;7HROUTEID: HAPROXY_BACKUP[20;5H- STATEID: BACKUP[K[21;5H- PRIORITYID: 100[22;5H{% endif %}[23;3Hcmd.run:[24;5H- name: chkconfig --add keepalived[25;31H[7m48% L35[0m[39;49m[27m[13;1H[?12l[?25h[?12;25h[25;37H[?25l[7m4[0m[39;49m[27m[12;1H[?12l[?25h[?12;25h[25;37H[?25l[7m3[0m[39;49m[27m[11;1H[?12l[?25h[?12;25h[25;37H[?25l[7m2[0m[39;49m[27m[10;1H[?12l[?25h[?12;25h[25;37H[?25l[7m1[0m[39;49m[27m[9;1H[?12l[?25h[?12;25h[25;37H[?25l[7m0[0m[39;49m[27m[8;1H[?12l[?25h[?12;25h[25;36H[?25l[7m29[0m[39;49m[27m[7;1H[?12l[?25h[?12;25h[25;37H[?25l[7m8[0m[39;49m[27m[6;1H[?12l[?25h[?12;25h[25;37H[?25l[7m7[0m[39;49m[27m[5;1H[?12l[?25h[?12;25h[25;37H[?25l[7m6[0m[39;49m[27m[4;1H[?12l[?25h[?12;25h[25;37H[?25l[7m5[0m[39;49m[27m[H
+
+[?12l[?25h[?12;25h[25;37H[?25l[7m4[0m[39;49m[27m[H
+[?12l[?25h[?12;25h[2;5H[?25l  - file: keepalived-install
+[K
+/etc/sysconfig/keepalived:[5;3Hfile.managed:
+    - source: salt://keepalived/files/keepalived.sysconfig[7;3H  - mode: 644[8;7Huser: root[K[9;7Hgroup: root[K
+[K
+/etc/init.d/keepalived:[12;3Hfile.managed:[K[13;7Hsource: salt://keepalived/files/keepalived.init[14;5H- mode: 755[K[15;7Huser: root[K[16;7Hgroup: root[K
+[K
+keepalived-server:[K[19;3Hfile.managed:[K[20;7Hname: /etc/keepalived/keepalived.conf[21;7Hsource: salt://keepalived/files/keepalived.conf[22;5H- mode: 644[23;3H  - user: root[24;7Hgroup: root[K
+		[7m29% L23[0m[39;49m[27m[13;1H[?12l[?25h[?12;25h[25;37H[?25l[7m2[0m[39;49m[27m[12;1H[?12l[?25h[?12;25h[25;37H[?25l[7m1[0m[39;49m[27m[11;1H[?12l[?25h[?12;25h[25;37H[?25l[7m0[0m[39;49m[27m[10;1H[?12l[?25h[?12;25h[25;36H[?25l[7m19[0m[39;49m[27m[9;1H[?12l[?25h[?12;25h[25;37H[?25l[7m8[0m[39;49m[27m[8;1H[?12l[?25h[?12;25h[25;37H[?25l[7m7[0m[39;49m[27m[7;1H[?12l[?25h[?12;25h[25;37H[?25l[7m6[0m[39;49m[27m[6;1H[?12l[?25h[?12;25h[25;37H[?25l[7m5[0m[39;49m[27m[5;1H[?12l[?25h[?12;25h[25;37H[?25l[7m4[0m[39;49m[27m[4;1H[?12l[?25h[?12;25h[25;37H[?25l[7m3[0m[39;49m[27m[H
+
+[?12l[?25h[?12;25h[25;37H[?25l[7m2[0m[39;49m[27m[H
+[?12l[?25h[?12;25h[?25lkeepalived-install:[K[3;3Hfile.managed:
+    - name: /usr/local/src/keepalived-1.2.8.tar.gz[5;3H  - source: salt://keepalived/files/keepalived-1.2.8.tar.gz[6;7Hmode: 755[K[7;7Huser: root[8;7Hgroup: root[9;3Hcmd.run:[K[10;5H- name: cd /usr/local/src && tar zxf keepalived-1.2.8.tar.gz && cd keepalived-1.2.8 && ./configure --prefix=/jboss/keepalived-1.\
+2.8 && make && make install[12;3H  - unless: test -d /jboss/keepalived-1.2.8[13;7Hrequire:[K[14;5H  - file: keepalived-install
+[K
+/etc/sysconfig/keepalived:[17;3Hfile.managed:
+    - source: salt://keepalived/files/keepalived.sysconfig[19;3H  - mode: 644[20;7Huser: root[K[21;7Hgroup: root[K
+[K
+/etc/init.d/keepalived:[24;3Hfile.managed:[K[25;31H[7mTop L11[0m[39;49m[27m[13;1H[?12l[?25h[?12;25h[25;37H[?25l[7m0[0m[39;49m[27m[12;1H[?12l[?25h[?12;25h[25;36H[?25l[7m9 [0m[39;49m[27m[11;1H[?12l[?25h[?12;25h[A[25;36H[?25l[7m8[0m[39;49m[27m[9;1H[?12l[?25h[?12;25h[25;36H[?25l[7m7[0m[39;49m[27m[8;1H[?12l[?25h[?12;25h[25;36H[?25l[7m6[0m[39;49m[27m[7;1H[?12l[?25h[?12;25h[25;36H[?25l[7m5[0m[39;49m[27m[6;1H[?12l[?25h[?12;25h[25;36H[?25l[7m4[0m[39;49m[27m[5;1H[?12l[?25h[?12;25h[25;36H[?25l[7m3[0m[39;49m[27m[4;1H[?12l[?25h[?12;25h[25;36H[?25l[7m2[0m[39;49m[27m[H
+
+[?12l[?25h[?12;25h[25;36H[?25l[7m1[0m[39;49m[27m[H
+[?12l[?25h[?12;25h[26d[?25lBeginning of buffer[H
+[?12l[?25h[?12;25h[26d[K[25;36H[?25l[7m2[0m[39;49m[27m[H
+
+[?12l[?25h[?12;25h[25;36H[?25l[7m3[0m[39;49m[27m[4;1H[?12l[?25h[?12;25h[25;36H[?25l[7m4[0m[39;49m[27m[5;1H[?12l[?25h[?12;25h[25;36H[?25l[7m5[0m[39;49m[27m[6;1H[?12l[?25h[?12;25h[25;36H[?25l[7m6[0m[39;49m[27m[7;1H[?12l[?25h[?12;25h[25;36H[?25l[7m7[0m[39;49m[27m[8;1H[?12l[?25h[?12;25h[25;36H[?25l[7m8[0m[39;49m[27m[9;1H[?12l[?25h[?12;25h[25;36H[?25l[7m9[0m[39;49m[27m[10;1H[?12l[?25h[?12;25h
+[25;36H[?25l[7m10[0m[39;49m[27m[12;1H[?12l[?25h[?12;25h[25;37H[?25l[7m1[0m[39;49m[27m[13;1H[?12l[?25h[?12;25h[25;37H[?25l[7m2[0m[39;49m[27m[14;1H[?12l[?25h[?12;25h[25;37H[?25l[7m3[0m[39;49m[27m[15;1H[?12l[?25h[?12;25h[25;37H[?25l[7m4[0m[39;49m[27m[16;1H[?12l[?25h[?12;25h[25;37H[?25l[7m5[0m[39;49m[27m[17;1H[?12l[?25h[?12;25h[25;37H[?25l[7m6[0m[39;49m[27m[18;1H[?12l[?25h[?12;25h[25;37H[?25l[7m7[0m[39;49m[27m[19;1H[?12l[?25h[?12;25h[25;37H[?25l[7m8[0m[39;49m[27m[20;1H[?12l[?25h[?12;25h[25;37H[?25l[7m9[0m[39;49m[27m[21;1H[?12l[?25h[?12;25h[25;36H[?25l[7m20[0m[39;49m[27m[22;1H[?12l[?25h[?12;25h[25;37H[?25l[7m1[0m[39;49m[27m[23;1H[?12l[?25h[?12;25h[25;37H[?25l[7m2[0m[39;49m[27m[A[?12l[?25h[?12;25h[2d[?25l      - file: keepalived-install
+[K
+/etc/sysconfig/keepalived:[K[5;3Hfile.managed:[K[6;7Hsource: salt://keepalived/files/keepalived.sysconfig[7;7Hmode: 644[K[8;7Huser: root[K[9;3H  - group: root
+[K
+/etc/init.d/keepalived:[K[12;3Hfile.managed:[K[13;7Hsource: salt://keepalived/files/keepalived.init[14;5H- mode: 755[K[15;5H- user: root
+    - group: root[K
+[K
+keepalived-server:[K[19;3Hfile.managed:[20;7Hname: /etc/keepalived/keepalived.conf[21;7Hsource: salt://keepalived/files/keepalived.conf[22;5H- mode: 644
+    - user: root[K[24;3H  - group: root
+		[7m29% L23[0m[39;49m[27m[13;1H[?12l[?25h[?12;25h[25;37H[?25l[7m4[0m[39;49m[27m[14;1H[?12l[?25h[?12;25h[25;37H[?25l[7m5[0m[39;49m[27m[15;1H[?12l[?25h[?12;25h[25;37H[?25l[7m6[0m[39;49m[27m[16;1H[?12l[?25h[?12;25h[25;37H[?25l[7m7[0m[39;49m[27m[17;1H[?12l[?25h[?12;25h[25;37H[?25l[7m8[0m[39;49m[27m[18;1H[?12l[?25h[?12;25h[25;37H[?25l[7m9[0m[39;49m[27m[19;1H[?12l[?25h[?12;25h[25;36H[?25l[7m30[0m[39;49m[27m[20;1H[?12l[?25h[?12;25h[25;37H[?25l[7m1[0m[39;49m[27m[21;1H[?12l[?25h[?12;25h[25;37H[?25l[7m2[0m[39;49m[27m[22;1H[?12l[?25h[?12;25h[25;37H[?25l[7m3[0m[39;49m[27m[23;1H[?12l[?25h[?12;25h[25;37H[?25l[7m4[0m[39;49m[27m[A[?12l[?25h[?12;25h[2;5H[?25l- mode: 755[K[3;5H- user: root
+    - group: root[K
+[K
+keepalived-server:[K[7;3Hfile.managed:[8;7Hname: /etc/keepalived/keepalived.conf[9;7Hsource: salt://keepalived/files/keepalived.conf[10;5H- mode: 644
+    - user: root[K[12;3H  - group: root[13;7Htemplate: jinja[K[14;5H{% if grains['fqdn'] == 'file-node1.womai.com' %}[15;7HROUTEID: HAPROXY_MASTER[16;7HSTATEID: MASTER[17;5H- PRIORITYID: 101
+    {% elif grains['fqdn'] == 'file-node2.womai.com' %}[19;3H  - ROUTEID: HAPROXY_BACKUP[20;7HSTATEID: BACKUP[K[21;7HPRIORITYID: 100[K[22;5H{% endif %}[23;3Hcmd.run:[K
+name: chkconfig --add keepalived[25;31H[7m48% L35[0m[39;49m[27m[13;1H[?12l[?25h[?12;25h[25;37H[?25l[7m6[0m[39;49m[27m[14;1H[?12l[?25h[?12;25h[25;37H[?25l[7m7[0m[39;49m[27m[15;1H[?12l[?25h[?12;25h[25;37H[?25l[7m8[0m[39;49m[27m[16;1H[?12l[?25h[?12;25h[25;37H[?25l[7m9[0m[39;49m[27m[17;1H[?12l[?25h[?12;25h[25;36H[?25l[7m40[0m[39;49m[27m[18;1H[?12l[?25h[?12;25h[25;37H[?25l[7m1[0m[39;49m[27m[19;1H[?12l[?25h[?12;25h[25;37H[?25l[7m2[0m[39;49m[27m[20;1H[?12l[?25h[?12;25h[25;37H[?25l[7m3[0m[39;49m[27m[21;1H[?12l[?25h[?12;25h[25;37H[?25l[7m4[0m[39;49m[27m[22;1H[?12l[?25h[?12;25h[25;37H[?25l[7m5[0m[39;49m[27m[23;1H[?12l[?25h[?12;25h[25;37H[?25l[7m6[0m[39;49m[27m[A[?12l[?25h[?12;25h[2;5H[?25l{% if grains['fqdn'] == 'file-node1.womai.com' %}[3;7HROUTEID: HAPROXY_MASTER[4;7HSTATEID: MASTER[5;5H- PRIORITYID: 101
+    {% elif grains['fqdn'] == 'file-node2.womai.com' %}[7;3H  - ROUTEID: HAPROXY_BACKUP[8;7HSTATEID: BACKUP[K[9;7HPRIORITYID: 100[K[10;5H{% endif %}[11;3Hcmd.run:[K
+name: chkconfig --add keepalived[13;7Hunless: chkconfig --list | grep keepalived[14;5H- require:[K[15;5H  - file: /etc/init.d/keepalived[16;3Hservice.running:[K[17;7Hname: keepalived[18;5H- enable: True[K[19;7Hwatch:[K[20;5H  - file: keepalived-server
+[K
+[K
+[K
+[K[25;31H[7mBot L47[0m[39;49m[27m[13;1H[?12l[?25h[?12;25h[25;37H[?25l[7m8[0m[39;49m[27m[14;1H[?12l[?25h[?12;25h[25;37H[?25l[7m9[0m[39;49m[27m[15;1H[?12l[?25h[?12;25h[25;36H[?25l[7m50[0m[39;49m[27m[16;1H[?12l[?25h[?12;25h[25;37H[?25l[7m1[0m[39;49m[27m[17;1H[?12l[?25h[?12;25h[25;37H[?25l[7m2[0m[39;49m[27m[18;1H[?12l[?25h[?12;25h[25;37H[?25l[7m3[0m[39;49m[27m[19;1H[?12l[?25h[?12;25h[25;37H[?25l[7m4[0m[39;49m[27m[20;1H[?12l[?25h[?12;25h[25;37H[?25l[7m5[0m[39;49m[27m[21;1H[?12l[?25h[?12;25h[26d[?25lEnd of buffer[21;1H[?12l[?25h[?12;25h[26d[K[25;37H[?25l[7m4[0m[39;49m[27m[20;1H[?12l[?25h[?12;25h[25;37H[?25l[7m3[0m[39;49m[27m[19;1H[?12l[?25h[?12;25h[25;37H[?25l[7m2[0m[39;49m[27m[18;1H[?12l[?25h[?12;25h[25;37H[?25l[7m1[0m[39;49m[27m[17;1H[?12l[?25h[?12;25h[25;37H[?25l[7m0[0m[39;49m[27m[16;1H[?12l[?25h[?12;25h[25;36H[?25l[7m49[0m[39;49m[27m[15;1H[?12l[?25h[?12;25h[25;37H[?25l[7m8[0m[39;49m[27m[14;1H[?12l[?25h[?12;25h[25;37H[?25l[7m7[0m[39;49m[27m[13;1H[?12l[?25h[?12;25h[25;37H[?25l[7m6[0m[39;49m[27m[12;1H[?12l[?25h[?12;25h[25;37H[?25l[7m5[0m[39;49m[27m[11;1H[?12l[?25h[?12;25h[25;37H[?25l[7m4[0m[39;49m[27m[10;1H[?12l[?25h[?12;25h[25;37H[?25l[7m3[0m[39;49m[27m[9;1H[?12l[?25h[?12;25h[25;37H[?25l[7m2[0m[39;49m[27m[8;1H[?12l[?25h[?12;25h[25;37H[?25l[7m1[0m[39;49m[27m[7;1H[?12l[?25h[?12;25h[25;37H[?25l[7m0[0m[39;49m[27m[6;1H[?12l[?25h[?12;25h[25;36H[?25l[7m39[0m[39;49m[27m[5;1H[?12l[?25h[?12;25h[25;37H[?25l[7m8[0m[39;49m[27m[4;1H[?12l[?25h[?12;25h[25;37H[?25l[7m7[0m[39;49m[27m[H
+
+[?12l[?25h[?12;25h[25;37H[?25l[7m6[0m[39;49m[27m[H
+[?12l[?25h[?12;25h[2;5H[?25l- mode: 755[K[3;7Huser: root[K[4;7Hgroup: root[K
+[K
+keepalived-server:[K[7;3Hfile.managed:[K[8;7Hname: /etc/keepalived/keepalived.conf[9;7Hsource: salt://keepalived/files/keepalived.conf[10;5H- mode: 644[11;3H  - user: root[12;7Hgroup: root[K[13;7Htemplate: jinja[K[14;5H{% if grains['fqdn'] == 'file-node1.womai.com' %}[15;5H- ROUTEID: HAPROXY_MASTER[K[16;3H  - STATEID: MASTER[17;7HPRIORITYID: 101[K[18;5H{% elif grains['fqdn'] == 'file-node2.womai.com' %}[19;7HROUTEID: HAPROXY_BACKUP[20;5H- STATEID: BACKUP[K[21;5H- PRIORITYID: 100[22;5H{% endif %}[23;3Hcmd.run:[24;5H- name: chkconfig --add keepalived[25;31H[7m48% L35[0m[39;49m[27m[13;1H[?12l[?25h[?12;25h[25;37H[?25l[7m4[0m[39;49m[27m[12;1H[?12l[?25h[?12;25h[25;37H[?25l[7m3[0m[39;49m[27m[11;1H[?12l[?25h[?12;25h[25;37H[?25l[7m2[0m[39;49m[27m[10;1H[?12l[?25h[?12;25h[25;37H[?25l[7m1[0m[39;49m[27m[9;1H[?12l[?25h[?12;25h[25;37H[?25l[7m0[0m[39;49m[27m[8;1H[?12l[?25h[?12;25h[25;36H[?25l[7m29[0m[39;49m[27m[7;1H[?12l[?25h[?12;25h[25;37H[?25l[7m8[0m[39;49m[27m[6;1H[?12l[?25h[?12;25h[25;37H[?25l[7m7[0m[39;49m[27m[5;1H[?12l[?25h[?12;25h[25;37H[?25l[7m6[0m[39;49m[27m[4;1H[?12l[?25h[?12;25h[25;37H[?25l[7m5[0m[39;49m[27m[H
+
+[?12l[?25h[?12;25h[25;37H[?25l[7m4[0m[39;49m[27m[H
+[?12l[?25h[?12;25h[2;5H[?25l  - file: keepalived-install
+[K
+/etc/sysconfig/keepalived:[5;3Hfile.managed:
+    - source: salt://keepalived/files/keepalived.sysconfig[7;3H  - mode: 644[8;7Huser: root[K[9;7Hgroup: root[K
+[K
+/etc/init.d/keepalived:[12;3Hfile.managed:[K[13;7Hsource: salt://keepalived/files/keepalived.init[14;5H- mode: 755[K[15;7Huser: root[K[16;7Hgroup: root[K
+[K
+keepalived-server:[K[19;3Hfile.managed:[K[20;7Hname: /etc/keepalived/keepalived.conf[21;7Hsource: salt://keepalived/files/keepalived.conf[22;5H- mode: 644[23;3H  - user: root[24;7Hgroup: root[K
+		[7m29% L23[0m[39;49m[27m[13;1H[?12l[?25h[?12;25h[25;37H[?25l[7m2[0m[39;49m[27m[12;1H[?12l[?25h[?12;25h[25;37H[?25l[7m1[0m[39;49m[27m[11;1H[?12l[?25h[?12;25h[25;37H[?25l[7m0[0m[39;49m[27m[10;1H[?12l[?25h[?12;25h[25;36H[?25l[7m19[0m[39;49m[27m[9;1H[?12l[?25h[?12;25h[25;37H[?25l[7m8[0m[39;49m[27m[8;1H[?12l[?25h[?12;25h[25;37H[?25l[7m7[0m[39;49m[27m[7;1H[?12l[?25h[?12;25h[25;37H[?25l[7m6[0m[39;49m[27m[6;1H[?12l[?25h[?12;25h[25;37H[?25l[7m5[0m[39;49m[27m[5;1H[?12l[?25h[?12;25h[25;37H[?25l[7m4[0m[39;49m[27m[4;1H[?12l[?25h[?12;25h[25;37H[?25l[7m3[0m[39;49m[27m[H
+
+[?12l[?25h[?12;25h[25;37H[?25l[7m2[0m[39;49m[27m[H
+[?12l[?25h[?12;25h[?25lkeepalived-install:[K[3;3Hfile.managed:
+    - name: /usr/local/src/keepalived-1.2.8.tar.gz[5;3H  - source: salt://keepalived/files/keepalived-1.2.8.tar.gz[6;7Hmode: 755[K[7;7Huser: root[8;7Hgroup: root[9;3Hcmd.run:[K[10;5H- name: cd /usr/local/src && tar zxf keepalived-1.2.8.tar.gz && cd keepalived-1.2.8 && ./configure --prefix=/jboss/keepalived-1.\
+2.8 && make && make install[12;3H  - unless: test -d /jboss/keepalived-1.2.8[13;7Hrequire:[K[14;5H  - file: keepalived-install
+[K
+/etc/sysconfig/keepalived:[17;3Hfile.managed:
+    - source: salt://keepalived/files/keepalived.sysconfig[19;3H  - mode: 644[20;7Huser: root[K[21;7Hgroup: root[K
+[K
+/etc/init.d/keepalived:[24;3Hfile.managed:[K[25;31H[7mTop L11[0m[39;49m[27m[13;1H[?12l[?25h[?12;25h[25;37H[?25l[7m0[0m[39;49m[27m[12;1H[?12l[?25h[?12;25h[25;36H[?25l[7m9 [0m[39;49m[27m[11;1H[?12l[?25h[?12;25h[A[25;36H[?25l[7m8[0m[39;49m[27m[9;1H[?12l[?25h[?12;25h[25;36H[?25l[7m7[0m[39;49m[27m[8;1H[?12l[?25h[?12;25h[25;36H[?25l[7m6[0m[39;49m[27m[7;1H[?12l[?25h[?12;25h[25;36H[?25l[7m5[0m[39;49m[27m[6;1H[?12l[?25h[?12;25h[25;36H[?25l[7m4[0m[39;49m[27m[5;1H[?12l[?25h[?12;25h[25;36H[?25l[7m3[0m[39;49m[27m[4;1H[?12l[?25h[?12;25h[25;36H[?25l[7m2[0m[39;49m[27m[H
+
+[?12l[?25h[?12;25h[25;36H[?25l[7m1[0m[39;49m[27m[H
+[?12l[?25h[?12;25h[26d[?25lBeginning of buffer[H
+[?12l[?25h[?12;25h[26d[K[25;36H[?25l[7m2[0m[39;49m[27m[H
+
+[?12l[?25h[?12;25h[25;36H[?25l[7m3[0m[39;49m[27m[4;1H[?12l[?25h[?12;25h[25;36H[?25l[7m4[0m[39;49m[27m[5;1H[?12l[?25h[?12;25h[25;36H[?25l[7m5[0m[39;49m[27m[6;1H[?12l[?25h[?12;25h[25;36H[?25l[7m6[0m[39;49m[27m[7;1H[?12l[?25h[?12;25h[25;36H[?25l[7m7[0m[39;49m[27m[8;1H[?12l[?25h[?12;25h[25;36H[?25l[7m8[0m[39;49m[27m[9;1H[?12l[?25h[?12;25h[25;36H[?25l[7m9[0m[39;49m[27m[10;1H[?12l[?25h[?12;25h[25;36H[?25l[7m8[0m[39;49m[27m[9;1H[?12l[?25h[?12;25h[25;36H[?25l[7m7[0m[39;49m[27m[8;1H[?12l[?25h[?12;25h[25;36H[?25l[7m8[0m[39;49m[27m[9;1H[?12l[?25h[?12;25h[25;36H[?25l[7m7[0m[39;49m[27m[8;1H[?12l[?25h[?12;25h[25;36H[?25l[7m6[0m[39;49m[27m[7;1H[?12l[?25h[?12;25h[25;36H[?25l[7m5[0m[39;49m[27m[6;1H[?12l[?25h[?12;25h[25;36H[?25l[7m4[0m[39;49m[27m[5;1H[?12l[?25h[?12;25h[25;36H[?25l[7m3[0m[39;49m[27m[4;1H[?12l[?25h[?12;25h[C[C[C[C[C[25;36H[?25l[7m4[0m[39;49m[27m[5;6H[?12l[?25h[?12;25h[25;36H[?25l[7m5[0m[39;49m[27m[6;6H[?12l[?25h[?12;25h[25;36H[?25l[7m6[0m[39;49m[27m[7;6H[?12l[?25h[?12;25h[25;36H[?25l[7m7[0m[39;49m[27m[8;6H[?12l[?25h[?12;25h[25;36H[?25l[7m8[0m[39;49m[27m[9;6H[?12l[?25h[?12;25h[25;36H[?25l[7m9[0m[39;49m[27m[10;6H[?12l[?25h[?12;25h
+[25;36H[?25l[7m10[0m[39;49m[27m[12;6H[?12l[?25h[?12;25h[25;37H[?25l[7m1[0m[39;49m[27m[13;6H[?12l[?25h[?12;25h[25;37H[?25l[7m2[0m[39;49m[27m[14;6H[?12l[?25h[?12;25h[25;37H[?25l[7m3[0m[39;49m[27m[15;1H[?12l[?25h[?12;25h[25;37H[?25l[7m4[0m[39;49m[27m[16;6H[?12l[?25h[?12;25h[26;1H[?25l(No files need saving)[16;6H[?12l[?25h[?12;25h[26;1H[?25lWrote /root/.emacs.d/ac-comphist.dat[16;6H[?12l[?25h[?12;25h[26;1H[?25lSaving file /root/.emacs.d/ede-projects.el...[16;6H[?12l[?25h[?12;25h[26;1H[?25lWrote /root/.emacs.d/ede-projects.el[K[16;6H[?12l[?25h[?12;25h[26;1H[?25lSaving tag summaries...[K[16;6H[?12l[?25h[?12;25h[26;24H[?25ldone[16;6H[?12l[?25h[?12;25h[26;1H[K[?1l>[?12l[?25h[?1049l[39;49m]0;root@mydevops:~/myscript/salt/salt-state/keepalived[root@mydevops keepalived]# ls
+[0m[01;34mfiles[0m  keepalived.sls
+[m]0;root@mydevops:~/myscript/salt/salt-state/keepalived[root@mydevops keepalived]# cd ..
+]0;root@mydevops:~/myscript/salt/salt-state[root@mydevops salt-state]# ls
+[0m[01;34mhaproxy[0m  [01;34minit[0m  [01;34mkeepalived[0m  [01;34mlogstash[0m  [01;34mnginx[0m  [01;34mpillar[0m  [01;34mredis[0m  [01;34mzabbix[0m
+[m]0;root@mydevops:~/myscript/salt/salt-state[root@mydevops salt-state]# du -sh 
+204K	.
+]0;root@mydevops:~/myscript/salt/salt-state[root@mydevops salt-state]# ls
+[0m[01;34mhaproxy[0m  [01;34minit[0m  [01;34mkeepalived[0m  [01;34mlogstash[0m  [01;34mnginx[0m  [01;34mpillar[0m  [01;34mredis[0m  [01;34mzabbix[0m
+[m]0;root@mydevops:~/myscript/salt/salt-state[root@mydevops salt-state]# cd ..
+]0;root@mydevops:~/myscript/salt[root@mydevops salt]# ls
+[0m[01;34msalt-state[0m  [01;31msalt-state.zip[0m
+[m]0;root@mydevops:~/myscript/salt[root@mydevops salt]# cd ..
+]0;root@mydevops:~/myscript[root@mydevops myscript]# cd -
+/root/myscript/salt
+]0;root@mydevops:~/myscript/salt[root@mydevops salt]# ls
+[0m[01;34msalt-state[0m  [01;31msalt-state.zip[0m
+[m]0;root@mydevops:~/myscript/salt[root@mydevops salt]# rm [K[K[Kcd ..
+]0;root@mydevops:~/myscript[root@mydevops myscript]# ls
+[0m[01;34mansible[0m  [01;34mbyteofpython[0m  [01;34memacs[0m  [01;34mfile[0m   [01;34miptables[0m  [01;34mmypython[0m  [01;34mperl[0m             [01;34mPython_Linux_Unix[0m  [01;34msalt[0m         [01;34mtraining[0m  userinfo  [01;34mweb[0m
+[01;34mbash[0m     [01;34mcore[0m          [01;34mfab[0m    [01;34mflask[0m  LICENSE   [01;34mmysql[0m     [01;34mpython_examples[0m  README.md          server.conf  [01;34murllib[0m    [01;34mutils[0m
+[m]0;root@mydevops:~/myscript[root@mydevops myscript]# git st
+# On branch master
+# Changed but not updated:
+#   (use "git add/rm <file>..." to update what will be committed)
+#   (use "git checkout -- <file>..." to discard changes in working directory)
+#
+#	[31mdeleted:    ZabbixPythonApi-master/README.md[m
+#	[31mdeleted:    ZabbixPythonApi-master/myzabbix.py[m
+#	[31mdeleted:    ZabbixPythonApi-master/zapi.py[m
+#	[31mdeleted:    ZabbixPythonApi-master/zapi.pyc[m
+#	[31mdeleted:    bash/mysql/create_mysql_instance.sh[m
+#	[31mdeleted:    bash/mysql/install_cmake.sh[m
+#	[31mdeleted:    bash/mysql/install_mysql_from_source.sh[m
+#	[31mdeleted:    bash/mysql/my1[m
+#	[31mmodified:   emacs/install_emacs.sh[m
+#	[31mdeleted:    test.png[m
+#
+# Untracked files:
+#   (use "git add <file>..." to include in what will be committed)
+#
+#	[31mmysql/[m
+#	[31msalt/[m
+no changes added to commit (use "git add" and/or "git commit -a")
+]0;root@mydevops:~/myscript[root@mydevops myscript]# git add =[K-A
+]0;root@mydevops:~/myscript[root@mydevops myscript]# git commit -m ""a"[1P"a"d"d" "s"o"m"e" "s"a"l"t" "s"l"s" "f"i"l"e"s"
+[master 6f6d3b7] add some salt sls files
+ 39 files changed, 1772 insertions(+), 316 deletions(-)
+ delete mode 100644 ZabbixPythonApi-master/README.md
+ delete mode 100644 ZabbixPythonApi-master/myzabbix.py
+ delete mode 100755 ZabbixPythonApi-master/zapi.py
+ delete mode 100644 ZabbixPythonApi-master/zapi.pyc
+ rename {bash/mysql => mysql}/create_mysql_instance.sh (100%)
+ rename {bash/mysql => mysql}/install_cmake.sh (100%)
+ rename {bash/mysql => mysql}/install_mysql_from_source.sh (100%)
+ rename {bash/mysql => mysql}/my1 (95%)
+ create mode 100644 salt/salt-state.zip
+ create mode 100644 salt/salt-state/haproxy/files/haproxy.conf
+ create mode 100644 salt/salt-state/haproxy/files/haproxy.init
+ create mode 100644 salt/salt-state/haproxy/haproxy.sls
+ create mode 100644 salt/salt-state/init/files/rsyslog.conf
+ create mode 100644 salt/salt-state/init/files/syslog.conf
+ create mode 100644 salt/salt-state/init/syslog.sls
+ create mode 100644 salt/salt-state/init/tcpwrapper.sls
+ create mode 100644 salt/salt-state/keepalived/files/keepalived.conf
+ create mode 100644 salt/salt-state/keepalived/files/keepalived.init
+ create mode 100644 salt/salt-state/keepalived/files/keepalived.sysconfig
+ create mode 100644 salt/salt-state/keepalived/keepalived.sls
+ create mode 100644 salt/salt-state/logstash/elasticsearch.sls
+ create mode 100644 salt/salt-state/logstash/files/indexer.conf
+ create mode 100644 salt/salt-state/logstash/files/logstash.sh
+ create mode 100644 salt/salt-state/logstash/files/shipper.conf
+ create mode 100644 salt/salt-state/logstash/indexer.sls
+ create mode 100644 salt/salt-state/logstash/install.sls
+ create mode 100644 salt/salt-state/logstash/shipper.sls
+ create mode 100644 salt/salt-state/nginx/files/acl.conf
+ create mode 100644 salt/salt-state/nginx/files/nginx-init
+ create mode 100644 salt/salt-state/nginx/server.sls
+ create mode 100644 salt/salt-state/pillar/syslog.sls
+ create mode 100644 salt/salt-state/pillar/top.sls
+ create mode 100644 salt/salt-state/pillar/zabbix/agent.sls
+ create mode 100644 salt/salt-state/redis/files/redis.conf
+ create mode 100644 salt/salt-state/redis/server.sls
+ create mode 100644 salt/salt-state/zabbix/agent.sls
+ create mode 100644 salt/salt-state/zabbix/files/zabbix_agentd.conf
+ delete mode 100644 test.png
+]0;root@mydevops:~/myscript[root@mydevops myscript]# [4P(reverse-i-search)`':[C[22@p': emacs keepalived.slsu': git push -u origin master[1@s[C[C[C[C[C[C[C[1@h[C[C[C[C[C[C[C[root@mydevops myscript]#[C[C[C[C[C
+Counting objects: 58, done.
+Compressing objects:   2% (1/50)   Compressing objects:   4% (2/50)   Compressing objects:   6% (3/50)   Compressing objects:   8% (4/50)   Compressing objects:  10% (5/50)   Compressing objects:  12% (6/50)   Compressing objects:  14% (7/50)   Compressing objects:  16% (8/50)   Compressing objects:  18% (9/50)   Compressing objects:  20% (10/50)   Compressing objects:  22% (11/50)   Compressing objects:  24% (12/50)   Compressing objects:  26% (13/50)   Compressing objects:  28% (14/50)   Compressing objects:  30% (15/50)   Compressing objects:  32% (16/50)   Compressing objects:  34% (17/50)   Compressing objects:  36% (18/50)   Compressing objects:  38% (19/50)   Compressing objects:  40% (20/50)   Compressing objects:  42% (21/50)   Compressing objects:  44% (22/50)   Compressing objects:  46% (23/50)   Compressing objects:  48% (24/50)   Compressing objects:  50% (25/50)   Compressing objects:  52% (26/50)   Compressing objects:  54% (27/50)   Compressing objects:  56% (28/50)   Compressing objects:  58% (29/50)   Compressing objects:  60% (30/50)   Compressing objects:  62% (31/50)   Compressing objects:  64% (32/50)   Compressing objects:  66% (33/50)   Compressing objects:  68% (34/50)   Compressing objects:  70% (35/50)   Compressing objects:  72% (36/50)   Compressing objects:  74% (37/50)   Compressing objects:  76% (38/50)   Compressing objects:  78% (39/50)   Compressing objects:  80% (40/50)   Compressing objects:  82% (41/50)   Compressing objects:  84% (42/50)   Compressing objects:  86% (43/50)   Compressing objects:  88% (44/50)   Compressing objects:  90% (45/50)   Compressing objects:  92% (46/50)   Compressing objects:  94% (47/50)   Compressing objects:  96% (48/50)   Compressing objects:  98% (49/50)   Compressing objects: 100% (50/50)   Compressing objects: 100% (50/50), done.
+Writing objects:   1% (1/54)   Writing objects:   3% (2/54)   Writing objects:   5% (3/54)   Writing objects:   7% (4/54)   Writing objects:   9% (5/54)   Writing objects:  11% (6/54)   Writing objects:  12% (7/54)   Writing objects:  14% (8/54)   Writing objects:  16% (9/54)   Writing objects:  18% (10/54)   Writing objects:  20% (11/54)   Writing objects:  22% (12/54)   Writing objects:  24% (13/54)   Writing objects:  25% (14/54)   Writing objects:  27% (15/54)   Writing objects:  29% (16/54)   Writing objects:  31% (17/54)   Writing objects:  33% (18/54)   Writing objects:  35% (19/54)   Writing objects:  37% (20/54)   Writing objects:  38% (21/54)   Writing objects:  40% (22/54)   Writing objects:  42% (23/54)   Writing objects:  44% (24/54)   Writing objects:  46% (25/54)   Writing objects:  48% (26/54)   Writing objects:  50% (27/54)   Writing objects:  51% (28/54)   Writing objects:  55% (30/54)   Writing objects:  57% (31/54)   Writing objects:  59% (32/54)   Writing objects:  61% (33/54)   Writing objects:  62% (34/54)   Writing objects:  64% (35/54)   Writing objects:  66% (36/54)   Writing objects:  68% (37/54)   Writing objects:  70% (38/54)   Writing objects:  72% (39/54)   Writing objects:  74% (40/54)   Writing objects:  75% (41/54)   Writing objects:  77% (42/54)   Writing objects:  79% (43/54)   Writing objects:  81% (44/54)   Writing objects:  83% (45/54)   Writing objects:  85% (46/54)   Writing objects:  87% (47/54)   Writing objects:  88% (48/54)   Writing objects:  90% (49/54)   Writing objects:  92% (50/54)   Writing objects:  94% (51/54)   Writing objects:  96% (52/54)   Writing objects:  98% (53/54)   Writing objects: 100% (54/54)   Writing objects: 100% (54/54), 44.00 KiB, done.
+Total 54 (delta 6), reused 0 (delta 0)
+To git@github.com:lavenliu/myscript.git
+   2e8be26..6f6d3b7  master -> master
+Branch master set up to track remote branch master from origin.
+]0;root@mydevops:~/myscript[root@mydevops myscript]# 
