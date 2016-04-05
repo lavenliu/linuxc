@@ -1,6 +1,6 @@
 include ../Makefile.inc
 
-GEN_EXE = t_getopt
+GEN_EXE = t_getopt getopt
 
 LINUX_EXE = 
 

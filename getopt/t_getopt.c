@@ -25,13 +25,14 @@ usageError(char *progName, char *msg, int opt)
     if (msg != NULL && opt != 0)
         fprintf(stderr, "%s (-%c)\n", msg, printable(opt));
     fprintf(stderr, "Usage: %s [-p arg] [-x]\n", progName);
+	
     exit(EXIT_FAILURE);
 }
 
 int
 main(int argc, char *argv[])
 {
-    int opt, xfnd;
+    int   opt, xfnd;
     char *pstr;
 
     xfnd = 0;
@@ -44,11 +45,22 @@ main(int argc, char *argv[])
         printf("\n");
 
         switch (opt) {
-        case 'p': pstr = optarg;        break;
-        case 'x': xfnd++;               break;
-        case ':': usageError(argv[0], "Missing argument", optopt);
-        case '?': usageError(argv[0], "Unrecognized option", optopt);
-        default:  fatal("Unexpected case in switch()");
+        case 'p':
+			pstr = optarg;
+			break;
+			
+        case 'x':
+			xfnd++;
+			break;
+			
+        case ':':
+			usageError(argv[0], "Missing argument", optopt);
+			
+        case '?':
+			usageError(argv[0], "Unrecognized option", optopt);
+			
+        default:
+			fatal("Unexpected case in switch()");
         }
     }
 
@@ -59,5 +71,6 @@ main(int argc, char *argv[])
     if (optind < argc)
         printf("First nonoption argument is \"%s\" at argv[%d]\n",
                 argv[optind], optind);
+	
     exit(EXIT_SUCCESS);
 }
