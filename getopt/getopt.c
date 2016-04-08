@@ -8,6 +8,11 @@ int main(int argc, char *argv[])
 {
     int opt;
 
+	if (argc < 2) {
+		usage(argv[0]);
+		exit(1);
+	}
+
 	while ((opt = getopt(argc, argv, ":if:lr")) != -1) {
 		switch (opt) {
 		case 'i':
@@ -41,5 +46,8 @@ int main(int argc, char *argv[])
 void usage(char *progname)
 {
 	printf("usage: %s --help to get more information\n", progname);
-	exit(1);
+	printf("\t-i interactive\n");
+	printf("\t-l list files\n");
+	printf("\t-r read files\n");
+	printf("\t-f config file\n");
 }
