@@ -1,6 +1,6 @@
 include ../Makefile.inc
 
-GEN_EXE = t_uname
+GEN_EXE = t_uname myinfo
 
 LINUX_EXE = procfs_pidmax procfs_user_exe
 
