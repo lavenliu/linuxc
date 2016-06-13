@@ -1,0 +1,12 @@
+#!/bin/bash
+
+dialog --yesno "Hello World" 10 20
+
+if [ $? -eq 0 ] ; then
+	echo "You pressed OK, so, I tell you this machine's hostname"
+	HOSTNAME=`hostname`
+	echo "This hostname is ${HOSTNAME}"
+else
+	echo "I can't tell you"
+	echo "Bye"
+fi

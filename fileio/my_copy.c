@@ -59,6 +59,7 @@ int main(int argc, char *argv[])
     }
     if (close(output_fd) == -1) {
         perror("close error");
+        exit(1);
     }
     
     return 0;
