@@ -42,6 +42,7 @@ b) In a few cases, some changes have been incorporated into the
    additional code is conditionally compiled using the following
    platform-specific macros:
 
+   #+BEGIN_EXAMPLE
         __linux__       Defined on Linux
         __sun           Defined on Solaris
         __FreeBSD__     Defined on FreeBSD
@@ -52,7 +53,7 @@ b) In a few cases, some changes have been incorporated into the
         __osf__         Defined on Tru64 UNIX (formerly DEC OSF1)
         __sgi           Defined on Irix
         _AIX            Defined on AIX
-
+   #+END_EXAMPLE
 c) In the "dist" version, some programs have extra functionality beyond
    that in the "book" versions. Where this is significant, comments in
    the programs explain the differences.
@@ -71,7 +72,7 @@ one directory. This is particularly the case for each of the files in
 the 'lib' directory, most of which are also linked in the directory
 of the chapter relating to that file.
 
-`
+#+BEGIN_EXAMPLE
         Directory       Files for Chapter...
         lib             This contains library routines used by other 
                         programs. The tlpi_hdr.h and error_functions.* 
@@ -123,7 +124,7 @@ of the chapter relating to that file.
         altio           63 (Alternative I/O Models)
         pty             64 (Pseudoterminals)
         getopt          Appendix B: Parsing Command-Line Options
-`
+#+END_EXAMPLE
 
 In addition, the following supplementary code is included (relating
 to topics NOT covered in TLPI):
